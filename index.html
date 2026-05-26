@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <title>Visualizador de Situación Sinóptica</title>
+    <link rel="stylesheet" href="estilos.css">
+  </head>
+  <body>
+
+    <button id="btn-colapsar-sidebar" onclick="toggleSidebar()" title="Ocultar/Mostrar barra lateral">◀</button>
+
+    <div class="sidebar" id="sidebar-id">
+      
+      <button class="btn-home" onclick="volverAlHome()" title="Volver a la portada principal">🏠 Inicio</button>
+
+<div class="seccion-sidebar" style="margin-top: 15px;">
+        <h2>📂 Situación Sinóptica de Abril de 2021</h2>
+        <button class="carpeta-boton" onclick="cargarCategoria('altura500', this)">📁 Mapas de 500hPa</button>
+        <button class="carpeta-boton" onclick="cargarCategoria('altura250', this)">📁 Mapas de 250hPa</button>
+        <button class="carpeta-boton" onclick="cargarCategoria('superficie', this)">📁 Mapas de superficie</button>
+        <button class="carpeta-boton" onclick="cargarCategoria('omega', this)">📁 Omega 700hPa</button>
+        <button class="carpeta-boton" onclick="cargarCategoria('divergencia', this)">📁 Divergencia 950hPa</button>
+        
+        <button class="carpeta-boton" style="border-style: dotted;" onclick="cargarModoCuatroPaneles(this)">📊 Adv. de Temperatura (4 Niveles)</button>
+        <button class="carpeta-boton" style="border-style: dotted; margin-top: 5px;" onclick="cargarModoVorticidadPaneles(this)">📊 Adv. de Vorticidad (2 Niveles)</button>
+      </div>
+
+      <div class="seccion-sidebar">
+        <h2>✏️ Herramientas</h2>
+        <div class="panel-alumnos">
+          <p style="margin: 0 0 10px 0; font-size: 13px; color: #555;">Selectores para trazar ejes o frentes:</p>
+          <div class="paleta-colores">
+            <button class="color-btn" style="background-color: #FF0000;" onclick="cambiarColorDibujo('#FF0000')" title="Rojo"></button>
+            <button class="color-btn" style="background-color: #0000FF;" onclick="cambiarColorDibujo('#0000FF')" title="Azul"></button>
+            <button class="color-btn" style="background-color: #008000;" onclick="cambiarColorDibujo('#008000')" title="Verde"></button>
+            <button class="color-btn" style="background-color: #FFD700;" onclick="cambiarColorDibujo('#FFD700')" title="Amarillo"></button>
+            <button class="color-btn" style="background-color: #000000;" onclick="cambiarColorDibujo('#000000')" title="Negro"></button>
+          </div>
+          <button class="btn-dibujo-accion" onclick="borrarDibujo()">🧼 Borrar Trazos</button>
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="main-content">
+      
+      <div id="home-cover" class="portada-container">
+        <h1>Análisis de Situación Sinóptica</h1>
+        <p class="subtitulo-portada">Meteorología Sinóptica</p>
+        
+        <div class="tarjeta-instrucciones">
+          <h3>🎯 Objetivos del Ejercicio:</h3>
+          <ul>
+            <li>Identificar la estructura vertical de los sistemas meteorológicos en niveles bajos, medios y altos.</li>
+            <li>Localizar máximos de advección térmica, máximos de advección de vorticidad y ejes de vaguada/cuña.</li>
+            <li>Analizar los campos de divergencia y velocidad vertical (Omega).</li>
+          </ul>
+
+          <h3>💻 Guía rápida de uso:</h3>
+          <ol>
+            <li>Seleccioná cualquier categoría en la barra lateral para desplegar los campos dinámicos.</li>
+            <li>Utilizá la barra inferior (Slider) para avanzar o retroceder el tiempo en pasos cronológicos de 6 horas.</li>
+            <li>Hacé zoom con la <strong>rueda del mouse</strong> y arrastrá manteniendo el click presionado para inspeccionar detalles.</li>
+            <li>Elegí un color de la paleta para activar el <strong>lápiz de precisión</strong> y trazar tus análisis sobre el mapa izquierdo.</li>
+            <li>Usá el modo <strong>"Comparar Campos"</strong> o la grilla de <strong>"Advección de Temperatura"</strong> para vistas multidimensionales.</li>
+          </ol>
+        </div>
+        <p style="font-size: 13px; color: #777; font-style: italic; margin-top: 20px;">Hacé clic en cualquier mapa de la barra lateral para comenzar el análisis.</p>
+      </div>
+
+      <div id="viewer" class="viewer-container">
+        <div class="info-panel" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 15px;">
+          <div id="timestamp" class="timestamp-badge">Fecha: --/--/---- --:-- Z</div>
+          
+          <div class="map-actions-bar">
+            <button class="btn-accion-mapa" id="btn-play-loop" onclick="togglePlayLoop()" title="Reproducir bucle temporal (Espacio)">▶️ Animación</button>
+            <button class="btn-accion-mapa" id="btn-toggle-split" onclick="togglePantallaDividida()" title="Comparar dos campos en paralelo">🔄 Comparar Campos</button>
+            <button class="btn-accion-mapa" onclick="descargarMapaConTrazos()" title="Guardar análisis">💾 Guardar Análisis</button>
+          </div>
+        </div>
+
+        <div class="workspace-mapas" id="workspace-id">
+          
+          <div class="map-panel" id="panel-izq">
+            <div class="selector-mapa-split" id="split-sel-izq">
+              <select onchange="cambiarCapaSplit('izq', this.value)">
+                <option value="altura500">500 hPa</option>
+                <option value="altura250" selected>250 hPa</option>
+                <option value="superficie">Superficie</option>
+                <option value="omega">Omega 700hPa</option>
+                <option value="divergencia">Divergencia 950hPa</option>
+              </select>
+            </div>
+            <div class="img-wrapper" id="img-container">
+              <span class="badge-cuadrante" id="badge-c1"></span>
+              <img id="mapa-img" src="" alt="Campo Sinóptico">
+            </div>
+          </div>
+
+          <div class="map-panel" id="panel-der" style="display: none;">
+            <div class="selector-mapa-split">
+              <select onchange="cambiarCapaSplit('der', this.value)">
+                <option value="altura500">500 hPa</option>
+                <option value="altura250">250 hPa</option>
+                <option value="superficie">Superficie</option>
+                <option value="omega" selected>Omega 700hPa</option>
+                <option value="divergencia">Divergencia 950hPa</option>
+              </select>
+            </div>
+            <div class="img-wrapper" id="img-container-der">
+              <span class="badge-cuadrante" id="badge-c2"></span>
+              <img id="mapa-img-der" src="" alt="Campo Sinóptico Secundario">
+            </div>
+          </div>
+
+          <div class="map-panel" id="panel-inf-izq" style="display: none;">
+            <div class="img-wrapper" id="img-container-inf-izq">
+              <span class="badge-cuadrante" id="badge-c3"></span>
+              <img id="mapa-img-inf-izq" src="" alt="Campo Inferior Izquierdo">
+            </div>
+          </div>
+
+          <div class="map-panel" id="panel-inf-der" style="display: none;">
+            <div class="img-wrapper" id="img-container-inf-der">
+              <span class="badge-cuadrante" id="badge-c4"></span>
+              <img id="mapa-img-inf-der" src="" alt="Campo Inferior Derecho">
+            </div>
+          </div>
+
+          <div class="map-panel" id="panel-vort-izq" style="display: none;">
+            <div class="img-wrapper" id="img-container-vort-izq">
+              <span class="badge-cuadrante" id="badge-v1"></span>
+              <img id="mapa-img-vort-izq" src="" alt="Advección Vorticidad 500hPa">
+            </div>
+          </div>
+
+          <div class="map-panel" id="panel-vort-der" style="display: none;">
+            <div class="img-wrapper" id="img-container-vort-der">
+              <span class="badge-cuadrante" id="badge-v2"></span>
+              <img id="mapa-img-vort-der" src="" alt="Advección Vorticidad 1000hPa">
+            </div>
+          </div>
+
+        </div>
+
+        <div class="controls-panel">
+          <div class="slider-container" style="position: relative;">
+            <button class="nav-btn" id="btn-prev" onclick="cambiarPaso(-1)">◀</button>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
+              <input type="range" id="time-slider" class="slider" min="0" max="0" value="0" oninput="actualizarImagen(this.value)">
+              <div id="timeline-labels" class="timeline-ticks"></div>
+            </div>
+            <button class="nav-btn" id="btn-next" onclick="cambiarPaso(1)">▶</button>
+          </div>
+          
+          <div class="shortcuts-legend">
+            ⌨️ <strong>Atajos de teclado:</strong> Flecha Izquierda (<kbd>◀</kbd>) Anterior hora &bull; Flecha Derecha (<kbd>▶</kbd>) Siguiente hora &bull; Barra Espaciadora (<kbd>Espacio</kbd>) Iniciar/Pausar Animación &bull; Tecla <kbd>H</kbd> Volver al Inicio
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="generadores.js"></script>
+    <script src="herramientasDibujo.js"></script>
+    <script src="visualizador.js"></script>
+  </body>
+</html>

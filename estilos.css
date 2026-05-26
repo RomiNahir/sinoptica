@@ -1,0 +1,612 @@
+/* estilos.css */
+
+/* ==========================================================================
+   🎨 CONFIGURACIÓN GENERAL Y VARIABLES (TONOS CÁLIDOS)
+   ========================================================================== */
+:root {
+  --primary-color: #D84315; /* Tonalidad cálida principal (Terracota) */
+  --sidebar-width: 240px;   /* Ancho de barra lateral optimizado */
+  --bg-color: #f4f7f6;
+  --text-color: #333;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-color);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   ↔️ BARRA LATERAL COLAPSABLE ANIMADA
+   ========================================================================== */
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: #ffffff;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  z-index: 10;
+  
+  /* 🚀 COMPATIBILIDAD WINDOWS: Reserva espacio del scroll y lo suaviza */
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  
+  transition: margin-left 0.3s ease, opacity 0.3s ease;
+  box-sizing: border-box;
+}
+
+.sidebar.oculta {
+  margin-left: calc(-1 * var(--sidebar-width) - 40px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#btn-colapsar-sidebar {
+  position: fixed;
+  top: 55px; 
+  left: calc(var(--sidebar-width) + 12px); 
+  z-index: 99;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-color);
+  background-color: white;
+  color: var(--primary-color);
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  transition: left 0.3s ease, transform 0.3s ease, background-color 0.2s;
+}
+
+#btn-colapsar-sidebar:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+#btn-colapsar-sidebar.oculto {
+  left: 15px;
+  transform: rotate(180deg);
+}
+
+.sidebar h2 {
+  font-size: 14px; 
+  color: var(--text-color);
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--bg-color);
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.seccion-sidebar {
+  margin-bottom: 30px;
+}
+
+.carpeta-boton {
+  width: 100%;
+  background-color: transparent;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: left;
+  color: var(--text-color);
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.carpeta-boton:hover, .carpeta-boton.active {
+  background-color: #FF5722;
+  border-color: #FF5722;
+  color: white;
+}
+
+/* ==========================================================================
+   ✏️ PANEL DE HERRAMIENTAS DE ALUMNOS (DIBUJO)
+   ========================================================================== */
+.panel-alumnos {
+  background-color: var(--bg-color);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px dashed #bbb;
+}
+
+.paleta-colores {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+  justify-content: space-between;
+}
+
+.color-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.color-btn:hover {
+  transform: scale(1.15);
+}
+
+.btn-dibujo-accion {
+  width: 100%;
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  padding: 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+
+.btn-dibujo-accion:hover {
+  background-color: #d0d0d0;
+}
+
+/* ==========================================================================
+   💻 CONTENIDO PRINCIPAL Y VISUALIZADOR REFORZADO (ANTI-DESBORDE)
+   ========================================================================== */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  position: relative;
+  transition: padding-left 0.3s ease;
+  height: 100vh;
+  box-sizing: border-box;
+  
+  /* 🚀 COMPATIBILIDAD WINDOWS: Evita barras de scroll externas en navegadores */
+  overflow: hidden; 
+}
+
+.viewer-container {
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  height: 100%; 
+  max-width: 1400px; 
+  max-height: 95vh;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  box-sizing: border-box;
+}
+
+.info-panel {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.timestamp-badge {
+  display: inline-block;
+  background-color: #e1f0fe;
+  color: #0078D7;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.map-actions-bar {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-accion-mapa {
+  background-color: white;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-accion-mapa:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* ==========================================================================
+   🔄 ENTORNO DE MAPAS MULTI-RESOLUCIÓN (ADAPTATIVO)
+   ========================================================================== */
+.workspace-mapas {
+  display: flex;
+  width: 100%;
+  flex: 1; 
+  gap: 12px;
+  justify-content: center;
+  min-height: 0; 
+}
+
+.workspace-mapas.split-activo .map-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.map-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  height: 100%;
+}
+
+.selector-mapa-split {
+  display: none;
+  text-align: left;
+}
+
+.selector-mapa-split select {
+  padding: 6px 12px;
+  font-family: inherit;
+  font-weight: bold;
+  color: var(--text-color);
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+}
+
+.selector-mapa-split select:focus {
+  border-color: var(--primary-color);
+}
+
+/* GRID FLEXIBLE ADAPTATIVO PARA EL MODO 4 PANELES (2x2) */
+.workspace-mapas.modo-cuatro-activo {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important; 
+  grid-template-rows: repeat(2, 1fr) !important;    
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+.workspace-mapas.modo-cuatro-activo .map-panel {
+  flex: none;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* MODO EXCLUSIVO ADAPTATIVO: ADVECCIÓN DE VORTICIDAD (1x2) */
+.workspace-mapas.modo-vorticidad-activo {
+  display: flex !important;
+  width: 100%;
+  height: 100%;
+  gap: 12px;
+}
+
+.workspace-mapas.modo-vorticidad-activo .map-panel {
+  flex: 1;
+  height: 100% !important;
+}
+
+.badge-cuadrante {
+  display: none;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.workspace-mapas.modo-cuatro-activo .badge-cuadrante,
+.workspace-mapas.modo-vorticidad-activo .badge-cuadrante {
+  display: block;
+}
+
+/* ==========================================================================
+   🖼 CONTENEDOR DE IMAGEN FLUIDO (ELÁSTICO AL MONITOR)
+   ========================================================================== */
+.img-wrapper {
+  width: 100%;
+  flex: 1; 
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fafafa;
+  overflow: hidden;
+  position: relative;
+  cursor: grab;
+  min-height: 0; 
+}
+
+.img-wrapper:active {
+  cursor: grabbing;
+}
+
+.workspace-mapas.modo-cuatro-activo .img-wrapper {
+  height: 100% !important; 
+}
+
+.img-wrapper img {
+  /* 🚀 COMPATIBILIDAD WINDOWS: Forzamos encuadre absoluto al 100% */
+  max-width: 100%;
+  max-height: 100%;
+  
+  object-fit: contain; 
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  margin: auto;
+  transform-origin: center center;
+  transition: transform 0.1s ease-out;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ==========================================================================
+   🎛 LINEA DE TIEMPO SEGMENTADA Y CONTROLES INFERIORES
+   ========================================================================== */
+.controls-panel {
+  width: 100%;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 5px;
+  background: #ddd;
+  outline: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  cursor: pointer;
+}
+
+.nav-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.nav-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.timeline-ticks {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+
+.time-tick {
+  font-size: 10px;
+  color: #777;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s, transform 0.1s;
+  user-select: none;
+}
+
+.time-tick:hover {
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.time-tick.tick-activo {
+  color: #0078D7;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.shortcuts-legend {
+  text-align: center;
+  font-size: 11px;
+  color: #666;
+  background-color: #f9f9f9;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  margin-top: 3px;
+}
+
+kbd {
+  background-color: #eee;
+  border: 1px solid #b4b4b4;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+  color: #333;
+  display: inline-block;
+  font-size: 11px;
+  line-height: 1.4;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   🏠 DISEÑO DE PORTADA (HOME PRINCIPAL)
+   ========================================================================== */
+.btn-home {
+  width: 100%;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 15px;
+  transition: background-color 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-home:hover {
+  background-color: #FF5722;
+  transform: translateY(-1px);
+}
+
+.btn-home:active {
+  transform: translateY(0);
+}
+
+.portada-container {
+  max-width: 850px;
+  text-align: center;
+  padding: 30px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.portada-container h1 {
+  color: var(--primary-color);
+  font-size: 26px;
+  margin-bottom: 5px;
+}
+
+.subtitulo-portada {
+  font-size: 15px;
+  color: #666;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 25px;
+  letter-spacing: 0.5px;
+}
+
+.tarjeta-instrucciones {
+  background-color: #fafbfc;
+  border-left: 4px solid var(--primary-color);
+  padding: 20px 30px;
+  border-radius: 4px 8px 8px 4px;
+  text-align: left;
+}
+
+.tarjeta-instrucciones h3 {
+  color: var(--text-color);
+  font-size: 16px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.tarjeta-instrucciones ul, .tarjeta-instrucciones ol {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.6;
+  padding-left: 20px;
+}
+
+.tarjeta-instrucciones li {
+  margin-bottom: 8px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   🖨️ ESTILOS DE IMPRESIÓN Y EXPORTACIÓN LOCAL PDF
+   ========================================================================== */
+@media print {
+  .sidebar, .placeholder-text, .map-actions-bar, .controls-panel, .selector-mapa-split, #btn-colapsar-sidebar, .portada-container {
+    display: none !important;
+  }
+  body, .main-content, .viewer-container, .workspace-mapas {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+  }
+  .workspace-mapas.modo-cuatro-activo, .workspace-mapas.modo-vorticidad-activo {
+    display: block !important; 
+  }
+  .info-panel {
+    margin-bottom: 20px !important;
+    text-align: center !important;
+  }
+  .timestamp-badge {
+    border: 1px solid #0078D7 !important;
+    color: #0078D7 !important;
+    font-size: 16px !important;
+    padding: 8px 16px !important;
+    background-color: transparent !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .img-wrapper {
+    width: 100% !important;
+    height: 85vh !important;
+    border: none !important;
+    background: transparent !important;
+    overflow: visible !important;
+    position: relative !important;
+    page-break-inside: avoid;
+  }
+  .img-wrapper img, #capa-dibujo {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    position: absolute !important;
+    top: 0 !important; left: 0 !important;
+  }
+}
