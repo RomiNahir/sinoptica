@@ -1,37 +1,30 @@
 // visualizador.js
 
-// 🚀 SOLUCIÓN COMPATIBILIDAD ABSOLUTA: Lista fija de archivos de Abril de 2021 grabada en memoria
-const listaCronologicaFija = [
-  "10APR00Z2021.png", "10APR06Z2021.png", "10APR12Z2021.png", "10APR18Z2021.png",
-  "11APR00Z2021.png", "11APR06Z2021.png", "11APR12Z2021.png", "11APR18Z2021.png",
-  "12APR00Z2021.png", "12APR06Z2021.png", "12APR12Z2021.png", "12APR18Z2021.png",
-  "13APR00Z2021.png"
-];
-
-// Mapeamos la base de datos aplicando las subcarpetas y prefijos de forma directa
 const baseDeDatos = {
-  altura500:   { ruta: "500/",         archivos: listaCronologicaFija.map(f => `HGT500_vort_${f}`) },
-  altura250:   { ruta: "250/",         archivos: listaCronologicaFija.map(f => `Jet_${f}`) },
-  superficie:  { ruta: "superficie/",  archivos: listaCronologicaFija.map(f => `HGT_espesores_${f}`) },
-  omega:       { ruta: "omega/",       archivos: listaCronologicaFija.map(f => `omega_pres_${f}`) },
-  divergencia: { ruta: "divergencia/", archivos: listaCronologicaFija.map(f => `divergencia950_${f}`) },
+  altura500: { ruta: "500/", archivos: generarNombres("HGT500_vort_") },
+  altura250: { ruta: "250/", archivos: generarNombres("Jet_") },
+  superficie: { ruta: "superficie/", archivos: generarNombres("HGT_espesores_") },
+  omega: { ruta: "omega/", archivos: generarNombres("omega_pres_") },
+  divergencia: { ruta: "divergencia/", archivos: generarNombres("divergencia950_") },
   
-  adv1000:     { ruta: "advT1000/",    archivos: listaCronologicaFija.map(f => `advTempHGT1000_${f}`) },
-  adv900:      { ruta: "advT900/",     archivos: listaCronologicaFija.map(f => `advTempHGT900_${f}`) },
-  adv700:      { ruta: "advT700/",     archivos: listaCronologicaFija.map(f => `advTempHGT700_${f}`) },
-  adv400:      { ruta: "advT400/",     archivos: listaCronologicaFija.map(f => `advTempHGT400_${f}`) },
+  adv1000: { ruta: "advT1000/", archivos: generarNombres("advTempHGT1000_") },
+  adv900:  { ruta: "advT900/",  archivos: generarNombres("advTempHGT900_") },
+  adv700:  { ruta: "advT700/",  archivos: generarNombres("advTempHGT700_") },
+  adv400:  { ruta: "advT400/",  archivos: generarNombres("advTempHGT400_") },
 
-  vort500:     { ruta: "advVort500/",  archivos: listaCronologicaFija.map(f => `advVort500_${f}`) },
-  vort1000:    { ruta: "advVort1000/", archivos: listaCronologicaFija.map(f => `advVort1000_${f}`) }
+  vort500:  { ruta: "advVort500/",  archivos: generarNombres("advVort500_") },
+  vort1000: { ruta: "advVort1000/", archivos: generarNombres("advVort1000_") }
 };
 
 let categoriaActual = null;
 let indiceActual = 0;
 
+// Variables de Control de Modos de Pantalla
 let modoSplitActivo = false;
 let modoCuatroActivo = false;
 let modoVorticidadActivo = false; 
 
+// Variables para el Bucle de Reproducción Automática (Loop)
 let reproductorIntervalo = null;
 let animacionEnCurso = false;
 
@@ -50,17 +43,17 @@ const mesesEsp = {
   "SEP": "Septiembre", "OCT": "Octubre", "NOV": "Noviembre", "DEC": "Diciembre"
 };
 
-function cargarCategoria(categoria, elementoBoton) {
+function cargarCategoria(categoria) {
   desactivarModosEspeciales();
   document.getElementById('panel-izq').style.display = "flex";
 
   categoriaActual = baseDeDatos[categoria];
   capaSplitIzq = categoria;
+  
   indiceActual = 0;
-  
   document.querySelectorAll('.carpeta-boton').forEach(btn => btn.classList.remove('active'));
-  if (elementoBoton) elementoBoton.classList.add('active');
-  
+  if(!modoSplitActivo && event && event.currentTarget) event.currentTarget.classList.add('active');
+
   if(document.getElementById('home-cover')) document.getElementById('home-cover').style.display = 'none';
   document.getElementById('viewer').style.display = 'flex';
 
@@ -68,17 +61,17 @@ function cargarCategoria(categoria, elementoBoton) {
   slider.max = baseDeDatos[capaSplitIzq].archivos.length - 1;
   slider.value = 0;
 
-  construirSegmentosLineaTiempo(); 
+  construirSegmentosLineaTiempo(); // 🚀 Dibuja los bloques horarios
   actualizarImagen(0);
   resetearZoom(); 
 }
 
-function cargarModoCuatroPaneles(elementoBoton) {
+function cargarModoCuatroPaneles() {
   desactivarModosEspeciales();
   modoCuatroActivo = true;
   
   document.querySelectorAll('.carpeta-boton').forEach(btn => btn.classList.remove('active'));
-  if (elementoBoton) elementoBoton.classList.add('active');
+  if(event && event.currentTarget) event.currentTarget.classList.add('active');
   
   const workspace = document.getElementById('workspace-id');
   workspace.classList.add('modo-cuatro-activo');
@@ -99,17 +92,17 @@ function cargarModoCuatroPaneles(elementoBoton) {
   const slider = document.getElementById('time-slider');
   slider.max = categoriaActual.archivos.length - 1; slider.value = 0;
 
-  construirSegmentosLineaTiempo(); 
+  construirSegmentosLineaTiempo(); // 🚀 Dibuja los bloques horarios
   actualizarImagen(0);
   resetearZoom(); 
 }
 
-function cargarModoVorticidadPaneles(elementoBoton) {
+function cargarModoVorticidadPaneles() {
   desactivarModosEspeciales();
   modoVorticidadActivo = true;
 
   document.querySelectorAll('.carpeta-boton').forEach(btn => btn.classList.remove('active'));
-  if (elementoBoton) elementoBoton.classList.add('active');
+  if(event && event.currentTarget) event.currentTarget.classList.add('active');
 
   const workspace = document.getElementById('workspace-id');
   workspace.classList.add('modo-vorticidad-activo');
@@ -127,13 +120,13 @@ function cargarModoVorticidadPaneles(elementoBoton) {
   const slider = document.getElementById('time-slider');
   slider.max = categoriaActual.archivos.length - 1; slider.value = 0;
 
-  construirSegmentosLineaTiempo(); 
+  construirSegmentosLineaTiempo(); // 🚀 Dibuja los bloques horarios
   actualizarImagen(0);
   resetearZoom();
 }
 
 function desactivarModosEspeciales() {
-  pausarLoop(); 
+  pausarLoop(); // Apaga la animación si cambiamos de modo
   modoCuatroActivo = false;
   modoVorticidadActivo = false;
   
@@ -141,9 +134,8 @@ function desactivarModosEspeciales() {
   workspace.classList.remove('modo-cuatro-activo');
   workspace.classList.remove('modo-vorticidad-activo');
 
-  document.getElementById('panel-izq').style.display = "flex";
-  document.getElementById('panel-der').style.display = modoSplitActivo ? "flex" : "none";
-  
+  document.getElementById('panel-izq').style.display = "none";
+  document.getElementById('panel-der').style.display = "none";
   document.getElementById('panel-inf-izq').style.display = "none";
   document.getElementById('panel-inf-der').style.display = "none";
   document.getElementById('panel-vort-izq').style.display = "none";
@@ -158,9 +150,6 @@ function desactivarModosEspeciales() {
 }
 
 function actualizarImagen(indice) {
-  if (document.getElementById('viewer').style.display === 'none') return;
-  if (!categoriaActual || !categoriaActual.archivos || !categoriaActual.archivos.length) return;
-  
   indiceActual = parseInt(indice);
   let archivoReferencia = "";
 
@@ -188,7 +177,7 @@ function actualizarImagen(indice) {
   if (typeof colorActual !== 'undefined' && colorActual !== "") colorActual = ""; 
   if (typeof inicializarCapaDibujo === 'function') setTimeout(inicializarCapaDibujo, 50);
 
-  // Decodificación directa del formato temporal de los strings guardados
+  // Decodificación temporal
   const dia = archivoReferencia.substring(archivoReferencia.indexOf("_") + 1, archivoReferencia.indexOf("_") + 3);
   const mesTexto = archivoReferencia.substring(archivoReferencia.indexOf("_") + 3, archivoReferencia.indexOf("_") + 6).toUpperCase();
   const hora = archivoReferencia.substring(archivoReferencia.indexOf("_") + 6, archivoReferencia.indexOf("_") + 8);
@@ -203,6 +192,7 @@ function actualizarImagen(indice) {
   document.getElementById('btn-next').disabled = (indiceActual === categoriaActual.archivos.length - 1);
   document.getElementById('time-slider').value = indiceActual;
 
+  // Sincroniza visualmente el bloque horario iluminado en la línea de tiempo
   document.querySelectorAll('.time-tick').forEach((tick, idx) => {
     if (idx === indiceActual) tick.classList.add('tick-activo');
     else tick.classList.remove('tick-activo');
@@ -214,7 +204,7 @@ function cambiarPaso(direccion) {
   if (nuevoIndice >= 0 && nuevoIndice < categoriaActual.archivos.length) {
     actualizarImagen(nuevoIndice);
   } else if (animacionEnCurso && nuevoIndice >= categoriaActual.archivos.length) {
-    actualizarImagen(0); 
+    actualizarImagen(0); // Bucle circular continuo para la animación
   }
 }
 
@@ -231,11 +221,7 @@ function togglePantallaDividida() {
     workspace.classList.add('split-activo'); 
     document.getElementById('panel-izq').style.display = "flex";
     panelDer.style.display = "flex";
-    
-    if(!categoriaActual) {
-      categoriaActual = baseDeDatos[capaSplitIzq];
-      construirSegmentosLineaTiempo();
-    }
+    if(!categoriaActual) categoriaActual = baseDeDatos[capaSplitIzq];
   } else {
     btn.innerText = "🔄 Comparar Campos"; btn.style.backgroundColor = "white"; btn.style.color = "var(--primary-color)";
     workspace.classList.remove('split-activo'); 
@@ -243,10 +229,6 @@ function togglePantallaDividida() {
     panelDer.style.display = "none";
   }
   
-  document.getElementById('split-sel-izq').style.display = modoSplitActivo ? "block" : "none";
-  const selectoresPanelDer = panelDer.querySelector('.selector-mapa-split');
-  if(selectoresPanelDer) selectoresPanelDer.style.display = modoSplitActivo ? "block" : "none";
-
   if(document.getElementById('viewer').style.display === 'flex') {
     actualizarImagen(indiceActual); resetearZoom();
   }
@@ -258,10 +240,11 @@ function cambiarCapaSplit(lado, valor) {
   actualizarImagen(indiceActual);
 }
 
+// --- 🚀 NUEVA: CREACIÓN DINÁMICA DE BLOQUES HORARIOS ---
 function construirSegmentosLineaTiempo() {
   const contenedorTicks = document.getElementById('timeline-labels');
   if (!contenedorTicks || !categoriaActual) return;
-  contenedorTicks.innerHTML = ""; 
+  contenedorTicks.innerHTML = ""; // Resetea bloques anteriores
 
   categoriaActual.archivos.forEach((nombreArchivo, idx) => {
     const dia = nombreArchivo.substring(nombreArchivo.indexOf("_") + 1, nombreArchivo.indexOf("_") + 3);
@@ -272,6 +255,7 @@ function construirSegmentosLineaTiempo() {
     elementoTick.innerText = `${dia}-${hora}Z`;
     elementoTick.title = `Saltar al día ${dia} a las ${hora}:00 UTC`;
     
+    // Al hacer clic en la marca, salta directo a esa hora
     elementoTick.addEventListener('click', () => {
       pausarLoop();
       actualizarImagen(idx);
@@ -281,6 +265,7 @@ function construirSegmentosLineaTiempo() {
   });
 }
 
+// --- 🚀 NUEVA: REPRODUCCIÓN AUTOMÁTICA (ANIMACIÓN LOOP) ---
 function togglePlayLoop() {
   const btn = document.getElementById('btn-play-loop');
   if (animacionEnCurso) {
@@ -291,7 +276,7 @@ function togglePlayLoop() {
     btn.style.backgroundColor = "#2E7D32"; btn.style.color = "white";
     reproductorIntervalo = setInterval(() => {
       cambiarPaso(1);
-    }, 1000); 
+    }, 1000); // Velocidad crucero: cambia de mapa cada 1.0 segundos
   }
 }
 
@@ -307,27 +292,41 @@ function pausarLoop() {
   }
 }
 
+// --- 🚀 NUEVA CONSOLA DE ATAJOS DE TECLADO ---
 window.addEventListener('keydown', function(e) {
+  // Ignoramos los atajos si el alumno está interactuando con listas desplegables
   if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
-  if (document.getElementById('viewer').style.display !== 'flex') return;
+  
+  // Evitamos capturar si el visualizador está completamente oculto (en la portada)
+  if (document.getElementById('viewer').style.display !== 'flex') {
+    // Excepción: Permitir la tecla H para pruebas o reactivación
+    return;
+  }
 
   switch(e.key) {
-    case 'ArrowLeft':
-      e.preventDefault(); pausarLoop(); cambiarPaso(-1);
+    case 'ArrowLeft': // ◀ Flecha Izquierda: Hora anterior
+      e.preventDefault();
+      pausarLoop();
+      cambiarPaso(-1);
       break;
-    case 'ArrowRight':
-      e.preventDefault(); pausarLoop(); cambiarPaso(1);
+    case 'ArrowRight': // ▶ Flecha Derecha: Hora siguiente
+      e.preventDefault();
+      pausarLoop();
+      cambiarPaso(1);
       break;
-    case ' ':
-      e.preventDefault(); togglePlayLoop();
+    case ' ': // Espacio: Play / Pausa del bucle
+      e.preventDefault();
+      togglePlayLoop();
       break;
     case 'h':
-    case 'H':
-      e.preventDefault(); volverAlHome();
+    case 'H': // Tecla H: Volver al Home principal
+      e.preventDefault();
+      volverAlHome();
       break;
   }
 });
 
+// --- INTERACCIÓN DE ZOOM Y ARRASTRE ESPEJADOS ---
 const imgIzq = document.getElementById('mapa-img'); const imgDer = document.getElementById('mapa-img-der');
 const imgInfIzq = document.getElementById('mapa-img-inf-izq'); const imgInfDer = document.getElementById('mapa-img-inf-der');
 const imgVortIzq = document.getElementById('mapa-img-vort-izq'); const imgVortDer = document.getElementById('mapa-img-vort-der');
@@ -383,7 +382,3 @@ function volverAlHome() {
   document.getElementById('viewer').style.display = 'none';
   resetearZoom();
 }
-
-window.addEventListener('DOMContentLoaded', () => {
-  volverAlHome(); 
-});
