@@ -1,4 +1,4 @@
-f// generadores.js
+// generadores.js
 
 function generarNombres(prefijo = "") {
   const lista = [];
