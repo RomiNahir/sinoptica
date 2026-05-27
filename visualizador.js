@@ -244,18 +244,27 @@ function cambiarCapaSplit(lado, valor) {
 function construirSegmentosLineaTiempo() {
   const contenedorTicks = document.getElementById('timeline-labels');
   if (!contenedorTicks || !categoriaActual) return;
-  contenedorTicks.innerHTML = ""; // Resetea bloques anteriores
+  contenedorTicks.innerHTML = ""; 
 
   categoriaActual.archivos.forEach((nombreArchivo, idx) => {
-    const dia = nombreArchivo.substring(nombreArchivo.indexOf("_") + 1, nombreArchivo.indexOf("_") + 3);
-    const hora = nombreArchivo.substring(nombreArchivo.indexOf("_") + 6, nombreArchivo.indexOf("_") + 8);
+    // 🚀 SOLUCIÓN: Buscamos la posición de "APR" en el nombre del archivo, sea cual sea su largo
+    const posMes = nombreArchivo.toUpperCase().indexOf("APR");
+    
+    let dia = "--";
+    let hora = "--";
+    
+    if (posMes !== -1) {
+      // El día son los 2 caracteres que están justo ANTES de "APR"
+      dia = nombreArchivo.substring(posMes - 2, posMes);
+      // La hora son los 2 caracteres que están justo DESPUÉS de "APR"
+      hora = nombreArchivo.substring(posMes + 3, posMes + 5);
+    }
     
     const elementoTick = document.createElement('span');
     elementoTick.className = 'time-tick';
-    elementoTick.innerText = `${dia}-${hora}Z`;
+    elementoTick.innerText = `${dia}-${hora}Z`; // Ahora sí va a armar "10-00Z", "11-06Z", etc.
     elementoTick.title = `Saltar al día ${dia} a las ${hora}:00 UTC`;
     
-    // Al hacer clic en la marca, salta directo a esa hora
     elementoTick.addEventListener('click', () => {
       pausarLoop();
       actualizarImagen(idx);
