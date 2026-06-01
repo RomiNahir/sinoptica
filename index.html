@@ -4,29 +4,39 @@
     <meta charset="UTF-8">
     <title>Visualizador de Situación Sinóptica</title>
     <link rel="stylesheet" href="estilos.css">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   </head>
   <body>
 
-    <button id="btn-colapsar-sidebar" onclick="toggleSidebar()" title="Ocultar/Mostrar barra lateral">◀</button>
+    <!-- Botón flotante oculto por defecto -->
+    <button id="btn-colapsar-sidebar" onclick="toggleSidebar()" title="Ocultar/Mostrar barra lateral" style="display: none;">◀</button>
 
-    <div class="sidebar" id="sidebar-id">
+    <!-- BARRA LATERAL (Oculta por defecto) -->
+    <div class="sidebar" id="sidebar-id" style="display: none;">
       
-      <button class="btn-home" onclick="volverAlHome()" title="Volver a la portada principal">🏠 Inicio</button>
+      <button class="btn-home" onclick="volverAlInicioAbsoluto()" title="Volver a la selección de eventos">🏠 Cambiar Evento</button>
 
       <div class="seccion-sidebar" style="margin-top: 15px;">
-        <h2>📂 Situación Sinóptica de Abril de 2018</h2>
-        <button class="carpeta-boton" onclick="cargarCategoria('altura500')">📁 Mapas de 500hPa</button>
-        <button class="carpeta-boton" onclick="cargarCategoria('altura250')">📁 Mapas de 250hPa</button>
-        <button class="carpeta-boton" onclick="cargarCategoria('superficie')">📁 Mapas de superficie</button>
-        <button class="carpeta-boton" onclick="cargarCategoria('omega')">📁 Omega 700hPa</button>
-        <button class="carpeta-boton" onclick="cargarCategoria('divergencia')">📁 Divergencia 950hPa</button>
+        <!-- El título cambiará dinámicamente según el evento elegido -->
+        <h2 id="titulo-sidebar-evento">📂 Situación Sinóptica</h2>
+        <button class="carpeta-boton" onclick="cargarCategoria('altura500', this)">📁 Mapas de 500hPa</button>
+        <button class="carpeta-boton" onclick="cargarCategoria('altura250', this)">📁 Mapas de 250hPa</button>
+        <button class="carpeta-boton" onclick="cargarCategoria('superficie', this)">📁 Mapas de superficie</button>
+        <button class="carpeta-boton" onclick="cargarCategoria('omega', this)">📁 Omega 700hPa</button>
+        <button class="carpeta-boton" onclick="cargarCategoria('divergencia', this)">📁 Divergencia 950hPa</button>
         
-        <button class="carpeta-boton" style="border-style: dotted;" onclick="cargarModoCuatroPaneles()">📊 Adv. de Temperatura (4 Niveles)</button>
-        <button class="carpeta-boton" style="border-style: dotted; margin-top: 5px;" onclick="cargarModoVorticidadPaneles()">📊 Adv. de Vorticidad (2 Niveles)</button>
+        <button class="carpeta-boton" style="border-style: dotted;" onclick="cargarModoCuatroPaneles(this)">📊 Adv. de Temperatura (4 Niveles)</button>
+        <button class="carpeta-boton" style="border-style: dotted; margin-top: 5px;" onclick="cargarModoVorticidadPaneles(this)">📊 Adv. de Vorticidad (2 Niveles)</button>
       </div>
 
       <div class="seccion-sidebar">
-        <h2>✏️ Herramientas</h2>
         <div class="panel-alumnos">
           <p style="margin: 0 0 10px 0; font-size: 13px; color: #555;">Selectores para trazar ejes o frentes:</p>
           <div class="paleta-colores">
@@ -37,6 +47,10 @@
             <button class="color-btn" style="background-color: #000000;" onclick="cambiarColorDibujo('#000000')" title="Negro"></button>
           </div>
           <button class="btn-dibujo-accion" onclick="borrarDibujo()">🧼 Borrar Trazos</button>
+          
+          <!-- BOTÓN DE ECUACIONES -->
+          <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
+          <button class="carpeta-boton" style="background-color: #37474F; color: white; border-color: #37474F;" onclick="mostrarEcuaciones()">∑ Ecuaciones QG</button>
         </div>
       </div>
       
@@ -44,10 +58,13 @@
 
     <div class="main-content">
       
+      <!-- PORTADA INICIAL CON SELECCIÓN DE EVENTOS -->
       <div id="home-cover" class="portada-container">
         <h1>Análisis de Situación Sinóptica</h1>
         <p class="subtitulo-portada">Meteorología Sinóptica</p>
         
+        <!-- IMAGEN DE PORTADA -->
+		<img src="mapa-portada.jpg" alt="Imagen Sinóptica" class="img-portada">        
         <div class="tarjeta-instrucciones">
           <h3>🎯 Objetivos del Ejercicio:</h3>
           <ul>
@@ -56,18 +73,64 @@
             <li>Analizar los campos de divergencia y velocidad vertical (Omega).</li>
           </ul>
 
-          <h3>💻 Guía rápida de uso:</h3>
-          <ol>
-            <li>Seleccioná cualquier categoría en la barra lateral para desplegar los campos dinámicos.</li>
-            <li>Utilizá la barra inferior (Slider) para avanzar o retroceder el tiempo en pasos cronológicos de 6 horas.</li>
-            <li>Hacé zoom con la <strong>rueda del mouse</strong> y arrastrá manteniendo el click presionado para inspeccionar detalles.</li>
-            <li>Elegí un color de la paleta para activar el <strong>lápiz de precisión</strong> y trazar tus análisis sobre el mapa izquierdo.</li>
-            <li>Usá el modo <strong>"Comparar Campos"</strong> o la grilla de <strong>"Advección de Temperatura"</strong> para vistas multidimensionales.</li>
-          </ol>
+          <!-- SECTOR DE BOTONES DE EVENTO -->
+          <div class="seleccion-evento-container">
+            <h3>🌩️ Seleccioná el caso de estudio para comenzar:</h3>
+            <div class="grid-eventos">
+              <button class="btn-evento" onclick="seleccionarEvento('abril2021')">📅 Caso 1: Abril de 2021</button>
+              <button class="btn-evento" onclick="seleccionarEvento('eventoNuevo')">📅 Caso 2: [Nuevo Evento]</button>
+            </div>
+          </div>
         </div>
-        <p style="font-size: 13px; color: #777; font-style: italic; margin-top: 20px;">Hacé clic en cualquier mapa de la barra lateral para comenzar el análisis.</p>
       </div>
 
+      <!-- PANEL DE ECUACIONES QG (Oculto por defecto) -->
+      <div id="panel-ecuaciones" class="ecuaciones-container" style="display: none;">
+        <h1 style="color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px;">Ecuaciones del Sistema Cuasigeostrófico (QG)</h1>
+        <p style="color: #666; font-style: italic; margin-bottom: 30px;">Formulación tradicional en coordenadas isobáricas (basado en Bluestein).</p>
+
+        <div class="ecuacion-caja">
+          <h3>1. Vorticidad Cuasigeostrófica y Geopotencial</h3>
+          <p>La vorticidad geostrófica se relaciona directamente con el Laplaciano del campo de geopotencial ($\Phi$). Los mínimos de geopotencial (vaguadas) se asocian a vorticidad ciclónica máxima.</p>
+          <div class="math-display">
+            $$ \zeta_g = \frac{1}{f_0} \nabla_p^2 \Phi $$
+          </div>
+        </div>
+
+        <div class="ecuacion-caja">
+          <h3>2. Ecuación de Continuidad en Coordenadas Isobáricas</h3>
+          <p>En el marco cuasigeostrófico, el viento geostrófico es no divergente ($ \nabla_p \cdot \vec{V}_g = 0 $). Por lo tanto, la divergencia está dada únicamente por la componente ageostrófica del viento.</p>
+          <div class="math-display">
+            $$ \nabla_p \cdot \vec{V}_{ag} + \frac{\partial \omega}{\partial p} = 0 $$
+          </div>
+        </div>
+
+        <div class="ecuacion-caja">
+          <h3>3. Tendencia de la Vorticidad Cuasigeostrófica</h3>
+          <p>Los cambios locales de vorticidad geostrófica son impulsados por la advección horizontal de vorticidad absoluta y por el estiramiento/contracción de la columna vertical (divergencia).</p>
+          <div class="math-display">
+            $$ \frac{\partial \zeta_g}{\partial t} = -\vec{V}_g \cdot \nabla_p (\zeta_g + f) + f_0 \frac{\partial \omega}{\partial p} $$
+          </div>
+        </div>
+
+        <div class="ecuacion-caja">
+          <h3>4. Ecuación de Tendencia del Geopotencial ($\chi$)</h3>
+          <p>Definiendo la tendencia del geopotencial como $\chi = \partial \Phi / \partial t$, esta ecuación diagnostica los cambios en la altura de las superficies isobáricas debido a la advección de vorticidad y la advección diferencial de temperatura.</p>
+          <div class="math-display">
+            $$ \left( \nabla_p^2 + \frac{f_0^2}{\sigma} \frac{\partial^2}{\partial p^2} \right) \chi = -f_0 \vec{V}_g \cdot \nabla_p \left( \frac{1}{f_0} \nabla_p^2 \Phi + f \right) - \frac{f_0^2}{\sigma} \frac{\partial}{\partial p} \left[ -\vec{V}_g \cdot \nabla_p \left( -\frac{\partial \Phi}{\partial p} \right) \right] $$
+          </div>
+        </div>
+
+        <div class="ecuacion-caja">
+          <h3>5. Ecuación Omega ($\omega$) Completa</h3>
+          <p>Diagnostica la velocidad vertical cuasigeostrófica. El forzante está dado por la advección diferencial de vorticidad absoluta (término 1) y por el Laplaciano de la advección horizontal de temperatura (término 2).</p>
+          <div class="math-display">
+            $$ \left( \nabla_p^2 + \frac{f_0^2}{\sigma} \frac{\partial^2}{\partial p^2} \right) \omega = \frac{f_0}{\sigma} \frac{\partial}{\partial p} \left[ \vec{V}_g \cdot \nabla_p \left( \frac{1}{f_0} \nabla_p^2 \Phi + f \right) \right] + \frac{1}{\sigma} \nabla_p^2 \left[ \vec{V}_g \cdot \nabla_p \left( -\frac{\partial \Phi}{\partial p} \right) \right] $$
+          </div>
+        </div>
+      </div>
+
+      <!-- VISOR DE MAPAS (Oculto por defecto) -->
       <div id="viewer" class="viewer-container">
         <div class="info-panel" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 15px;">
           <div id="timestamp" class="timestamp-badge">Fecha: --/--/---- --:-- Z</div>
@@ -160,7 +223,6 @@
       </div>
     </div>
 
-    <script src="generadores.js"></script>
     <script src="herramientasDibujo.js"></script>
     <script src="visualizador.js"></script>
   </body>
