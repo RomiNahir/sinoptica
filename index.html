@@ -15,56 +15,40 @@
   </head>
   <body>
 
-    <!-- Botón flotante oculto por defecto -->
     <button id="btn-colapsar-sidebar" onclick="toggleSidebar()" title="Ocultar/Mostrar barra lateral" style="display: none;">◀</button>
 
-    <!-- BARRA LATERAL (Oculta por defecto) -->
     <div class="sidebar" id="sidebar-id" style="display: none;">
       
       <button class="btn-home" onclick="volverAlInicioAbsoluto()" title="Volver a la selección de eventos">🏠 Cambiar Evento</button>
 
       <div class="seccion-sidebar" style="margin-top: 15px;">
-        <!-- El título cambiará dinámicamente según el evento elegido -->
         <h2 id="titulo-sidebar-evento">📂 Situación Sinóptica</h2>
-        <button class="carpeta-boton" onclick="cargarCategoria('altura500', this)">📁 Mapas de 500hPa</button>
-        <button class="carpeta-boton" onclick="cargarCategoria('altura250', this)">📁 Mapas de 250hPa</button>
-        <button class="carpeta-boton" onclick="cargarCategoria('superficie', this)">📁 Mapas de superficie</button>
-        <button class="carpeta-boton" onclick="cargarCategoria('omega', this)">📁 Omega 700hPa</button>
-        <button class="carpeta-boton" onclick="cargarCategoria('divergencia', this)">📁 Divergencia 950hPa</button>
         
-        <button class="carpeta-boton" style="border-style: dotted;" onclick="cargarModoCuatroPaneles(this)">📊 Adv. de Temperatura (4 Niveles)</button>
-        <button class="carpeta-boton" style="border-style: dotted; margin-top: 5px;" onclick="cargarModoVorticidadPaneles(this)">📊 Adv. de Vorticidad (2 Niveles)</button>
-      </div>
-
-      <div class="seccion-sidebar">
-        <div class="panel-alumnos">
-          <p style="margin: 0 0 10px 0; font-size: 13px; color: #555;">Selectores para trazar ejes o frentes:</p>
-          <div class="paleta-colores">
-            <button class="color-btn" style="background-color: #FF0000;" onclick="cambiarColorDibujo('#FF0000')" title="Rojo"></button>
-            <button class="color-btn" style="background-color: #0000FF;" onclick="cambiarColorDibujo('#0000FF')" title="Azul"></button>
-            <button class="color-btn" style="background-color: #008000;" onclick="cambiarColorDibujo('#008000')" title="Verde"></button>
-            <button class="color-btn" style="background-color: #FFD700;" onclick="cambiarColorDibujo('#FFD700')" title="Amarillo"></button>
-            <button class="color-btn" style="background-color: #000000;" onclick="cambiarColorDibujo('#000000')" title="Negro"></button>
-          </div>
-          <button class="btn-dibujo-accion" onclick="borrarDibujo()">🧼 Borrar Trazos</button>
-          
-          <!-- BOTÓN DE ECUACIONES -->
-          <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
-          <button class="carpeta-boton" style="background-color: #37474F; color: white; border-color: #37474F;" onclick="mostrarEcuaciones()">∑ Ecuaciones QG</button>
-        </div>
+        <button class="carpeta-boton" id="btn-250" onclick="cargarCategoria('altura250', this)">📁 Mapas de 250hPa</button>
+        <button class="carpeta-boton" id="btn-500" onclick="cargarCategoria('altura500', this)">📁 Mapas de 500hPa</button>
+        <button class="carpeta-boton" id="btn-sup" onclick="cargarCategoria('superficie', this)">📁 Mapas de superficie</button>
+        <button class="carpeta-boton" id="btn-omega" onclick="cargarCategoria('omega', this)">📁 Omega 700hPa</button>
+        <button class="carpeta-boton" id="btn-div" onclick="cargarCategoria('divergencia', this)">📁 Divergencia 950hPa</button>
+        
+        <button class="carpeta-boton" id="btn-advT" style="border-style: dotted;" onclick="cargarModoCuatroPaneles(this)">📊 Adv. de Temperatura (4 Niveles)</button>
+        <button class="carpeta-boton" id="btn-advV" style="border-style: dotted; margin-top: 5px;" onclick="cargarModoVorticidadPaneles(this)">📊 Adv. de Vorticidad (2 Niveles)</button>
+        
+        <button class="carpeta-boton" id="btn-modo-3" style="border-style: dotted; margin-top: 5px; display: none;" onclick="cargarModoTresPaneles(this)">📊 Vista Vertical (3 Niveles Juntos)</button>
+        
+        <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
+        <button class="carpeta-boton" style="background-color: #37474F; color: white; border-color: #37474F;" onclick="mostrarEcuaciones()">∑ Ecuaciones QG</button>
       </div>
       
     </div>
 
     <div class="main-content">
       
-      <!-- PORTADA INICIAL CON SELECCIÓN DE EVENTOS -->
       <div id="home-cover" class="portada-container">
         <h1>Análisis de Situación Sinóptica</h1>
         <p class="subtitulo-portada">Meteorología Sinóptica</p>
         
-        <!-- IMAGEN DE PORTADA -->
-		<img src="mapa-portada.jpg" alt="Imagen Sinóptica" class="img-portada">        
+        <img src="mapa-portada.jpg" alt="Imagen Sinóptica" class="img-portada">
+        
         <div class="tarjeta-instrucciones">
           <h3>🎯 Objetivos del Ejercicio:</h3>
           <ul>
@@ -73,18 +57,16 @@
             <li>Analizar los campos de divergencia y velocidad vertical (Omega).</li>
           </ul>
 
-          <!-- SECTOR DE BOTONES DE EVENTO -->
           <div class="seleccion-evento-container">
             <h3>🌩️ Seleccioná el caso de estudio para comenzar:</h3>
             <div class="grid-eventos">
               <button class="btn-evento" onclick="seleccionarEvento('abril2021')">📅 Caso 1: Abril de 2021</button>
-              <button class="btn-evento" onclick="seleccionarEvento('eventoNuevo')">📅 Caso 2: [Nuevo Evento]</button>
+              <button class="btn-evento" onclick="seleccionarEvento('eventoNuevo')">📅 Caso 2: Noviembre de 2006</button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- PANEL DE ECUACIONES QG (Oculto por defecto) -->
       <div id="panel-ecuaciones" class="ecuaciones-container" style="display: none;">
         <h1 style="color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px;">Ecuaciones del Sistema Cuasigeostrófico (QG)</h1>
         <p style="color: #666; font-style: italic; margin-bottom: 30px;">Formulación tradicional en coordenadas isobáricas (basado en Bluestein).</p>
@@ -130,7 +112,6 @@
         </div>
       </div>
 
-      <!-- VISOR DE MAPAS (Oculto por defecto) -->
       <div id="viewer" class="viewer-container">
         <div class="info-panel" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 15px;">
           <div id="timestamp" class="timestamp-badge">Fecha: --/--/---- --:-- Z</div>
@@ -150,8 +131,6 @@
                 <option value="altura500">500 hPa</option>
                 <option value="altura250" selected>250 hPa</option>
                 <option value="superficie">Superficie</option>
-                <option value="omega">Omega 700hPa</option>
-                <option value="divergencia">Divergencia 950hPa</option>
               </select>
             </div>
             <div class="img-wrapper" id="img-container">
@@ -165,9 +144,7 @@
               <select onchange="cambiarCapaSplit('der', this.value)">
                 <option value="altura500">500 hPa</option>
                 <option value="altura250">250 hPa</option>
-                <option value="superficie">Superficie</option>
-                <option value="omega" selected>Omega 700hPa</option>
-                <option value="divergencia">Divergencia 950hPa</option>
+                <option value="superficie" selected>Superficie</option>
               </select>
             </div>
             <div class="img-wrapper" id="img-container-der">
@@ -223,7 +200,6 @@
       </div>
     </div>
 
-    <script src="herramientasDibujo.js"></script>
     <script src="visualizador.js"></script>
   </body>
 </html>
