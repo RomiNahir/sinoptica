@@ -33,10 +33,25 @@
         <button class="carpeta-boton" id="btn-advT" style="border-style: dotted;" onclick="cargarModoCuatroPaneles(this)">📊 Adv. de Temperatura (4 Niveles)</button>
         <button class="carpeta-boton" id="btn-advV" style="border-style: dotted; margin-top: 5px;" onclick="cargarModoVorticidadPaneles(this)">📊 Adv. de Vorticidad (2 Niveles)</button>
         
-        <button class="carpeta-boton" id="btn-modo-3" style="border-style: dotted; margin-top: 5px; display: none;" onclick="cargarModoTresPaneles(this)">📊 Vista Vertical (3 Niveles Juntos)</button>
-        
-        <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
-        <button class="carpeta-boton" style="background-color: #37474F; color: white; border-color: #37474F;" onclick="mostrarEcuaciones()">∑ Ecuaciones QG</button>
+        <button class="carpeta-boton" id="btn-modo-3" style="border-style: dotted; margin-top: 5px; display: none;" onclick="cargarModoTresPaneles(this)">📊 3 paneles</button>
+      </div>
+
+      <div class="seccion-sidebar">
+        <h2>✏️ Herramientas de Dibujo</h2>
+        <div class="panel-alumnos">
+          <p style="margin: 0 0 10px 0; font-size: 13px; color: #555;">Selectores para trazar ejes o frentes:</p>
+          <div class="paleta-colores">
+            <button class="color-btn" style="background-color: #FF0000;" onclick="cambiarColorDibujo('#FF0000')" title="Rojo"></button>
+            <button class="color-btn" style="background-color: #0000FF;" onclick="cambiarColorDibujo('#0000FF')" title="Azul"></button>
+            <button class="color-btn" style="background-color: #008000;" onclick="cambiarColorDibujo('#008000')" title="Verde"></button>
+            <button class="color-btn" style="background-color: #FFD700;" onclick="cambiarColorDibujo('#FFD700')" title="Amarillo"></button>
+            <button class="color-btn" style="background-color: #000000;" onclick="cambiarColorDibujo('#000000')" title="Negro"></button>
+          </div>
+          <button class="btn-dibujo-accion" onclick="borrarDibujo()">🧼 Borrar Trazos</button>
+          
+          <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
+          <button class="carpeta-boton" style="background-color: #37474F; color: white; border-color: #37474F;" onclick="mostrarEcuaciones()">∑ Ecuaciones QG</button>
+        </div>
       </div>
       
     </div>
@@ -200,6 +215,7 @@
       </div>
     </div>
 
+    <script src="herramientasDibujo.js"></script>
     <script src="visualizador.js"></script>
   </body>
 </html>

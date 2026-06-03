@@ -1,8 +1,15 @@
+/* ==========================================================================
+   🎨 CONFIGURACIÓN GENERAL Y VARIABLES (TONOS CÁLIDOS)
+   ========================================================================== */
 :root {
   --primary-color: #D84315; 
   --sidebar-width: 240px;   
   --bg-color: #f4f7f6;
   --text-color: #333;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
@@ -12,13 +19,17 @@ body {
   display: flex; height: 100vh; overflow: hidden;
 }
 
-/* --- BARRA LATERAL COLAPSABLE ANIMADA --- */
+/* ==========================================================================
+   ↔️ BARRA LATERAL COLAPSABLE ANIMADA
+   ========================================================================== */
 .sidebar {
   width: var(--sidebar-width);
   background-color: #ffffff;
   box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-  display: flex; flex-direction: column; padding: 20px; z-index: 10; overflow-y: auto;
+  display: flex; flex-direction: column; padding: 20px; z-index: 10; 
+  overflow-y: auto; scrollbar-gutter: stable; scrollbar-width: thin;
   transition: margin-left 0.3s ease, opacity 0.3s ease;
+  flex-shrink: 0;
 }
 
 .sidebar.oculta {
@@ -47,19 +58,19 @@ body {
 }
 
 .sidebar h2 {
-  font-size: 14px; /* Tamaño chico y estilizado */
+  font-size: 14px; 
   color: var(--text-color); margin-top: 0; margin-bottom: 20px;
   border-bottom: 2px solid var(--bg-color); padding-bottom: 10px; text-align: center;
 }
 
 .seccion-sidebar {
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 
 .carpeta-boton {
   width: 100%; background-color: transparent; border: 2px solid var(--primary-color);
   border-radius: 8px; padding: 12px; text-align: left; color: var(--text-color);
-  font-size: 15px; font-weight: bold; margin-bottom: 10px; cursor: pointer;
+  font-size: 14px; font-weight: bold; margin-bottom: 10px; cursor: pointer;
   transition: all 0.2s ease; display: flex; align-items: center; gap: 10px;
 }
 
@@ -67,7 +78,9 @@ body {
   background-color: #FF5722; border-color: #FF5722; color: white;
 }
 
-/* --- HERRAMIENTAS DE DIBUJO --- */
+/* ==========================================================================
+   ✏️ PANEL DE HERRAMIENTAS DE DIBUJO (ALUMNOS)
+   ========================================================================== */
 .panel-alumnos {
   background-color: var(--bg-color); padding: 15px; border-radius: 8px; border: 1px dashed #bbb;
 }
@@ -76,9 +89,19 @@ body {
   display: flex; gap: 8px; margin-bottom: 15px; justify-content: space-between;
 }
 
+/* 🚀 CORREGIDO: Candados estrictos para evitar deformaciones ovaladas en Edge/Windows */
 .color-btn {
-  width: 32px; height: 32px; border-radius: 50%; border: 2px solid white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.1s;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  border: 2px solid white !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: transform 0.1s;
+  padding: 0 !important; 
+  box-sizing: border-box;
+  outline: none;
+  display: inline-block;
 }
 
 .color-btn:hover { transform: scale(1.15); }
@@ -90,21 +113,24 @@ body {
 
 .btn-dibujo-accion:hover { background-color: #d0d0d0; }
 
-/* --- CONTENIDO PRINCIPAL Y VISUALIZADOR --- */
+/* ==========================================================================
+   💻 CONTENIDO PRINCIPAL Y VISUALIZADOR ELÁSTICO
+   ========================================================================== */
 .main-content {
   flex: 1; display: flex; flex-direction: column; align-items: center;
-  justify-content: center; padding: 20px; position: relative; transition: padding-left 0.3s ease;
+  justify-content: center; padding: 15px; position: relative; transition: padding-left 0.3s ease;
+  height: 100vh; overflow: hidden;
 }
 
 .placeholder-text { color: #888; font-size: 18px; font-style: italic; }
 
 .viewer-container {
-  display: none; flex-direction: column; align-items: center; width: 100%;
-  max-width: 1200px; background: white; padding: 20px; border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  display: none; flex-direction: column; width: 100%;
+  max-width: 1400px; height: 100%; background: white; padding: 15px; border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
 }
 
-.info-panel { text-align: center; margin-bottom: 15px; }
+.info-panel { text-align: center; margin-bottom: 15px; flex-shrink: 0; }
 
 .timestamp-badge {
   display: inline-block; background-color: #e1f0fe; color: #0078D7;
@@ -121,11 +147,16 @@ body {
 
 .btn-accion-mapa:hover { background-color: var(--primary-color); color: white; }
 
-/* --- ENTORNOS MULTI-PANEL (GRID 2x2) --- */
-.workspace-mapas { display: flex; width: 100%; gap: 15px; justify-content: center; }
+/* ==========================================================================
+   🔄 ENTORNO DE MAPAS MULTI-RESOLUCIÓN Y ENRUTADORES
+   ========================================================================== */
+.workspace-mapas { 
+  display: flex; width: 100%; gap: 12px; justify-content: center; 
+  flex: 1; min-height: 0; 
+}
 .workspace-mapas.split-activo .selector-mapa-split { display: block; }
 
-.map-panel { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.map-panel { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; min-height: 0; height: 100%; position: relative;}
 .selector-mapa-split { display: none; text-align: left; }
 
 .selector-mapa-split select {
@@ -134,13 +165,37 @@ body {
 }
 .selector-mapa-split select:focus { border-color: var(--primary-color); }
 
+/* 🚀 CORREGIDO: Forzamos orientación horizontal rígida para los 3 paneles en paralelo */
+.workspace-mapas.modo-tres-activo {
+  display: flex !important;
+  flex-direction: row !important; 
+  gap: 12px; width: 100%; height: 100%; min-height: 0;
+}
+.workspace-mapas.modo-tres-activo .map-panel {
+  flex: 1 !important; min-width: 0; min-height: 0; height: 100% !important;
+}
+.workspace-mapas.modo-tres-activo .badge-cuadrante { display: block; }
+
+/* GRID FLEXIBLE ADAPTATIVO ASGURADO PARA EL MODO 4 PANELES (2x2) */
 .workspace-mapas.modo-cuatro-activo {
-  display: grid !important; grid-template-columns: repeat(2, 1fr) !important; 
-  grid-template-rows: repeat(2, 1fr) !important; gap: 12px; width: 100%;
+  display: grid !important; 
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
+  grid-template-rows: repeat(2, minmax(0, 1fr)) !important; 
+  gap: 10px; width: 100%; height: 100%;
 }
 
-.workspace-mapas.modo-cuatro-activo .map-panel { flex: none; width: 100% !important; min-width: 0; }
-.workspace-mapas.modo-cuatro-activo .img-wrapper { height: 35vh !important; }
+.workspace-mapas.modo-cuatro-activo .map-panel { 
+  flex: none; width: 100% !important; height: 100% !important; 
+  min-width: 0; min-height: 0; 
+}
+
+/* MODO ADAPTATIVO: ADVECCIÓN DE VORTICIDAD (1x2) */
+.workspace-mapas.modo-vorticidad-activo {
+  display: flex !important; width: 100%; height: 100%; gap: 12px;
+}
+
+.workspace-mapas.modo-vorticidad-activo .map-panel { flex: 1; min-width: 0; height: 100% !important; }
+.workspace-mapas.modo-vorticidad-activo .badge-cuadrante { display: block; }
 
 .badge-cuadrante {
   display: none; position: absolute; top: 8px; left: 8px; background-color: rgba(0, 0, 0, 0.7);
@@ -149,12 +204,17 @@ body {
 }
 .workspace-mapas.modo-cuatro-activo .badge-cuadrante { display: block; }
 
-/* --- CONTENEDOR DE IMAGEN (ZOOM) --- */
+/* ==========================================================================
+   🖼 CONTENEDORES DE IMAGEN ELÁSTICOS Y LIENZO (CANVAS)
+   ========================================================================== */
 .img-wrapper {
-  width: 100%; height: 75vh; border: 1px solid #ddd; border-radius: 6px;
+  width: 100%; flex: 1; min-height: 0;
+  border: 1px solid #ddd; border-radius: 6px;
   background-color: #fafafa; overflow: hidden; position: relative; cursor: grab;
 }
 .img-wrapper:active { cursor: grabbing; }
+
+.workspace-mapas.modo-cuatro-activo .img-wrapper { height: 100% !important; min-height: 0 !important; }
 
 .img-wrapper img {
   max-width: 100%; max-height: 100%; object-fit: contain; position: absolute;
@@ -162,228 +222,96 @@ body {
   transition: transform 0.1s ease-out; user-select: none; -webkit-user-drag: none;
 }
 
-/* --- SLIDER --- */
-.controls-panel { width: 100%; margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+/* Lienzo de dibujo superpuesto */
+#capa-dibujo {
+  pointer-events: auto;
+  z-index: 5;
+}
+
+/* ==========================================================================
+   🎛 LINEA DE TIEMPO SEGMENTADA Y CONTROLES INFERIORES
+   ========================================================================== */
+.controls-panel { width: 100%; margin-top: 10px; display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
 .slider-container { display: flex; align-items: center; gap: 15px; }
 .slider { flex: 1; -webkit-appearance: none; appearance: none; height: 8px; border-radius: 5px; background: #ddd; outline: none; cursor: pointer; }
 .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary-color); cursor: pointer; }
 .nav-btn { background-color: var(--primary-color); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 .nav-btn:disabled { background-color: #ccc; cursor: not-allowed; }
 
-/* --- PORTADA PRINCIPAL (HOME) --- */
+.timeline-ticks { display: flex; justify-content: space-between; width: 100%; padding: 0 4px; box-sizing: border-box; }
+.time-tick { font-size: 10px; color: #777; font-weight: 600; cursor: pointer; position: relative; transition: color 0.2s, transform 0.1s; user-select: none; }
+.time-tick:hover { color: var(--primary-color); transform: scale(1.1); }
+.time-tick.tick-activo { color: #0078D7; font-weight: bold; font-size: 11px; }
+
+.shortcuts-legend {
+  text-align: center; font-size: 11px; color: #666; background-color: #f9f9f9;
+  padding: 5px 12px; border-radius: 6px; border: 1px solid #eee; margin-top: 3px;
+}
+kbd {
+  background-color: #eee; border: 1px solid #b4b4b4; border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.2); color: #333; display: inline-block;
+  font-family: inherit; font-size: 11px; line-height: 1.4; padding: 1px 5px; white-space: nowrap;
+}
+
+/* ==========================================================================
+   🏠 DISEÑO DE PORTADA (HOME PRINCIPAL CON SELECCIÓN)
+   ========================================================================== */
 .btn-home {
   width: 100%; background-color: var(--primary-color); color: white; border: none; border-radius: 8px;
-  padding: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 15px;
+  padding: 12px; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 15px;
   transition: background-color 0.2s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .btn-home:hover { background-color: #FF5722; transform: translateY(-1px); }
-.btn-home:active { transform: translateY(0); }
 
-.portada-container { max-width: 850px; text-align: center; padding: 30px; background-color: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); animation: fadeIn 0.4s ease-in-out; }
+.portada-container { max-width: 850px; text-align: center; padding: 30px; background-color: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); animation: fadeIn 0.4s ease-in-out; overflow-y: auto; max-height: 95vh; }
 .portada-container h1 { color: var(--primary-color); font-size: 26px; margin-bottom: 5px; }
 .subtitulo-portada { font-size: 15px; color: #666; font-weight: 600; margin-top: 0; margin-bottom: 25px; letter-spacing: 0.5px; }
 .tarjeta-instrucciones { background-color: #fafbfc; border-left: 4px solid var(--primary-color); padding: 20px 30px; border-radius: 4px 8px 8px 4px; text-align: left; }
 .tarjeta-instrucciones h3 { color: var(--text-color); font-size: 16px; margin-top: 15px; margin-bottom: 10px; }
-.tarjeta-instrucciones ul, .tarjeta-instrucciones ol { font-size: 14px; color: #444; line-height: 1.6; padding-left: 20px; }
+.tarjeta-instrucciones ul { font-size: 14px; color: #444; line-height: 1.6; padding-left: 20px; }
 .tarjeta-instrucciones li { margin-bottom: 8px; }
+
+.seleccion-evento-container { margin-top: 30px; padding-top: 20px; border-top: 2px dashed #ccc; text-align: center; }
+.seleccion-evento-container h3 { color: var(--primary-color); font-size: 17px; margin-bottom: 20px; }
+.grid-eventos { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+.btn-evento { background-color: var(--primary-color); color: white; border: none; border-radius: 8px; padding: 15px 25px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex: 1; min-width: 220px; max-width: 320px; }
+.btn-evento:hover { background-color: #FF5722; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+
+.img-portada { width: 100%; max-height: 220px; object-fit: cover; object-position: center; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* --- ASISTENTE IMPRESIÓN PDF --- */
+/* ==========================================================================
+   📐 PANEL ACADÉMICO DE ECUACIONES QG (MATHJAX)
+   ========================================================================== */
+.ecuaciones-container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 900px; overflow-y: auto; height: 90vh; box-sizing: border-box; }
+.ecuacion-caja { background: #fcfcfc; padding: 20px; margin-bottom: 25px; border-radius: 0 8px 8px 0; border: 1px solid #eee; border-left: 5px solid #37474F; }
+.ecuacion-caja h3 { margin-top: 0; color: #37474F; font-size: 17px; }
+.ecuacion-caja p { font-size: 14px; color: #555; line-height: 1.6; }
+.math-display { font-size: 110%; margin-top: 15px; padding: 15px; background-color: white; border-radius: 6px; border: 1px dashed #ccc; overflow-x: auto; }
+
+/* ==========================================================================
+   🖨️ ASISTENTE DE IMPRESIÓN Y EXPORTACIÓN PDF
+   ========================================================================== */
 @media print {
   .sidebar, .placeholder-text, .map-actions-bar, .controls-panel, .selector-mapa-split, #btn-colapsar-sidebar, .portada-container { display: none !important; }
   body, .main-content, .viewer-container, .workspace-mapas { display: block !important; width: 100% !important; height: auto !important; margin: 0 !important; padding: 0 !important; background: white !important; box-shadow: none !important; max-width: 100% !important; }
-  .workspace-mapas.modo-cuatro-activo { display: block !important; }
   .info-panel { margin-bottom: 20px !important; text-align: center !important; }
-  .timestamp-badge { border: 1px solid #0078D7 !important; color: #0078D7 !important; font-size: 16px !important; padding: 8px 16px !important; background-color: transparent !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .timestamp-badge { border: 1px solid #0078D7 !important; color: #0078D7 !important; font-size: 16px !important; padding: 8px 16px !important; background-color: transparent !important; }
   .img-wrapper { width: 100% !important; height: 85vh !important; border: none !important; background: transparent !important; overflow: visible !important; position: relative !important; page-break-inside: avoid; }
   .img-wrapper img, #capa-dibujo { max-width: 100% !important; max-height: 100% !important; position: absolute !important; top: 0 !important; left: 0 !important; }
 }
-/* --- MODO EXCLUSIVO: ADVECCIÓN DE VORTICIDAD --- */
-.workspace-mapas.modo-vorticidad-activo {
-  display: flex !important;
-  width: 100%;
-  gap: 15px;
-}
-
-.workspace-mapas.modo-vorticidad-activo .map-panel {
-  flex: 1;
-  min-width: 0;
-}
-
-/* Forzamos las etiquetas flotantes en la vorticidad */
-.workspace-mapas.modo-vorticidad-activo .badge-cuadrante {
-  display: block;
-}
-/* ==========================================================================
-   🎛️ NUEVOS: LÍNEA DE TIEMPO SEGMENTADA Y LEYENDA DE ATAJOS
-   ========================================================================== */
-
-/* Contenedor de las marcas de tiempo */
-.timeline-ticks {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0 4px;
-  box-sizing: border-box;
-}
-
-/* Bloques horarios individuales */
-.time-tick {
-  font-size: 10px;
-  color: #777;
-  font-weight: 600;
-  cursor: pointer;
-  position: relative;
-  transition: color 0.2s, transform 0.1s;
-  user-select: none;
-}
-
-.time-tick:hover {
-  color: var(--primary-color);
-  transform: scale(1.1);
-}
-
-/* Resalta el bloque de la hora que está cargado actualmente */
-.time-tick.tick-activo {
-  color: #0078D7;
-  font-weight: bold;
-  font-size: 11px;
-}
-
-/* Leyenda de Atajos Inferior */
-.shortcuts-legend {
-  text-align: center;
-  font-size: 12px;
-  color: #666;
-  background-color: #f9f9f9;
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #eee;
-  margin-top: 5px;
-}
-
-/* Estilo teclado para las teclas indicadoras */
-kbd {
-  background-color: #eee;
-  border: 1px solid #b4b4b4;
-  border-radius: 3px;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.2);
-  color: #333;
-  display: inline-block;
-  font-family: inherit;
-  font-size: 11px;
-  line-height: 1.4;
-  padding: 1px 5px;
-  white-space: nowrap;
-}
 
 /* ==========================================================================
-   🎯 SECCIÓN DE SELECCIÓN DE EVENTOS EN PORTADA
+   📱 ADAPTABILIDAD DE PANTALLA EN RESOLUCIONES ACUMULADAS
    ========================================================================== */
-.seleccion-evento-container {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 2px dashed #ccc;
-  text-align: center;
-}
-
-.seleccion-evento-container h3 {
-  color: var(--primary-color);
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
-.grid-eventos {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.btn-evento {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 15px 25px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  flex: 1;
-  min-width: 200px;
-  max-width: 300px;
-}
-
-.btn-evento:hover {
-  background-color: #FF5722;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
-
-.btn-evento:active {
-  transform: translateY(0);
-}
-
-/* ==========================================================================
-   🖼️ IMAGEN DE LA PORTADA
-   ========================================================================== */
-.img-portada {
-  width: 100%;
-  max-height: 220px;
-  object-fit: cover; /* Corta la imagen proporcionalmente sin deformarla */
-  object-position: center; /* Centra la imagen */
-  border-radius: 8px;
-  margin-bottom: 25px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* ==========================================================================
-   📐 PANEL DE ECUACIONES QG
-   ========================================================================== */
-.ecuaciones-container {
-  background: white; 
-  padding: 40px; 
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-  width: 100%; 
-  max-width: 900px;
-  overflow-y: auto; 
-  height: 90vh;
-  box-sizing: border-box;
-}
-
-.ecuacion-caja {
-  background: #fcfcfc; 
-  border-left: 5px solid #37474F;
-  padding: 20px; 
-  margin-bottom: 25px; 
-  border-radius: 0 8px 8px 0;
-  border-top: 1px solid #eee;
-  border-right: 1px solid #eee;
-  border-bottom: 1px solid #eee;
-}
-
-.ecuacion-caja h3 { 
-  margin-top: 0; 
-  color: #37474F; 
-  font-size: 17px; 
-}
-
-.ecuacion-caja p {
-  font-size: 14px;
-  color: #555;
-  line-height: 1.6;
-}
-
-.math-display {
-  font-size: 110%;
-  margin-top: 15px;
-  padding: 15px;
-  background-color: white;
-  border-radius: 6px;
-  border: 1px dashed #ccc;
-  overflow-x: auto;
+@media (max-width: 1000px) or (max-height: 720px) {
+  .viewer-container {
+    height: auto;
+    min-height: 100%;
+  }
+  .img-wrapper {
+    min-height: 40vh; 
+  }
+  /* Nota: Mantenemos el modo triple estrictamente horizontal (row) para garantizar el análisis sinóptico correcto */
 }

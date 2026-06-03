@@ -8,15 +8,15 @@ const listaAbril2021 = [
   "13APR00Z2021.png"
 ];
 
-// 🚀 EVENTO 2: Noviembre de 2006 (Ciclo completo del 05 al 08 cada 6 horas)
+// 🚀 EVENTO 2: Noviembre de 2006 (Extensión .png nativa fija)
 const listaNoviembre2006 = [
-  "2006110500.jpg", "2006110506.jpg", "2006110512.jpg", "2006110518.jpg",
-  "2006110600.jpg", "2006110606.jpg", "2006110612.jpg", "2006110618.jpg",
-  "2006110700.jpg", "2006110706.jpg", "2006110712.jpg", "2006110718.jpg",
-  "2006110800.jpg", "2006110806.jpg", "2006110812.jpg", "2006110818.jpg"
+  "2006110500.png", "2006110506.png", "2006110512.png", "2006110518.png",
+  "2006110600.png", "2006110606.png", "2006110612.png", "2006110618.png",
+  "2006110700.png", "2006110706.png", "2006110712.png", "2006110718.png",
+  "2006110800.png", "2006110806.png", "2006110812.png", "2006110818.png"
 ];
 
-// 🗄️ DICCIONARIO GLOBAL DE EVENTOS (Rutas actualizadas al nuevo contenedor 2006/)
+// 🗄️ DICCIONARIO GLOBAL DE EVENTOS (Rutas relativas anidadas en 2006/)
 const baseDeDatosGlobal = {
   'abril2021': {
     tituloSidebar: "📂 Abril de 2021",
@@ -37,7 +37,6 @@ const baseDeDatosGlobal = {
   'eventoNuevo': {
     tituloSidebar: "📂 Noviembre de 2006",
     capas: {
-      // 🚀 CORREGIDO: Ahora apuntan adentro de la carpeta contenedora 2006/
       altura250:   { ruta: "2006/200/",    archivos: listaNoviembre2006.map(f => `200_Geop_Div_${f}`) }, 
       altura500:   { ruta: "2006/500/",    archivos: listaNoviembre2006.map(f => `500_Geop_Vort_${f}`) }, 
       superficie:  { ruta: "2006/1000/",   archivos: listaNoviembre2006.map(f => `1000_Geop_V_Esp_${f}`) } 
@@ -57,8 +56,8 @@ let modoTresActivo = false;
 let reproductorIntervalo = null;
 let animacionEnCurso = false;
 
-let capaSplitIzq = "altura250";
-let capaSplitDer = "omega";
+let capaSplitIzq = "superficie";
+let capaSplitDer = "altura500";
 
 const carpetasCuatro = ["adv1000", "adv900", "adv700", "adv400"];
 const etiquetasCuatro = ["Nivel: 1000 hPa", "Nivel: 900 hPa", "Nivel: 700 hPa", "Nivel: 400 hPa"];
@@ -83,7 +82,16 @@ function seleccionarEvento(idEvento) {
 
   if(document.getElementById('panel-ecuaciones')) document.getElementById('panel-ecuaciones').style.display = 'none';
 
-  // Control adaptativo de botones según los campos disponibles
+  // 🚀 SOLUCIÓN AL SPLIT BLANCO: Forzamos capas iniciales compatibles que existan en ambos casos
+  capaSplitIzq = "superficie";
+  capaSplitDer = "altura500";
+
+  // Sincronizamos los selectores <select> visuales de la pantalla central
+  const selectIzq = document.querySelector("#split-sel-izq select");
+  const selectDer = document.querySelector("#panel-der select");
+  if(selectIzq) selectIzq.value = "superficie";
+  if(selectDer) selectDer.value = "altura500";
+
   if (idEvento === 'eventoNuevo') {
     document.getElementById('btn-250').innerText = "📁 Mapas de 200hPa";
     document.getElementById('btn-sup').innerText = "📁 Mapas de 1000hPa";
@@ -92,6 +100,8 @@ function seleccionarEvento(idEvento) {
     document.getElementById('btn-div').style.display = 'none';
     document.getElementById('btn-advT').style.display = 'none';
     document.getElementById('btn-advV').style.display = 'none';
+    
+    document.getElementById('btn-modo-3').innerText = "📊 3 paneles";
     document.getElementById('btn-modo-3').style.display = 'block';
   } else {
     document.getElementById('btn-250').innerText = "📁 Mapas de 250hPa";
@@ -135,7 +145,7 @@ function mostrarEcuaciones() {
 }
 
 // ==========================================================
-// 🌍 VISTAS ESPECIALES (MODO 3 PANELES SINCRONIZADOS)
+// 🌍 VISTAS ESPECIALES (MODO 3 PANELES CONTROLADO)
 // ==========================================================
 function cargarModoTresPaneles(elementoBoton) {
   if (!baseDeDatosActual) return;
@@ -147,14 +157,16 @@ function cargarModoTresPaneles(elementoBoton) {
   if (elementoBoton) elementoBoton.classList.add('active');
   
   const workspace = document.getElementById('workspace-id');
-  workspace.classList.add('split-activo'); 
-  workspace.style.display = 'flex';
-  workspace.style.flexDirection = 'row';
-  workspace.style.gap = '10px';
+  workspace.classList.add('modo-tres-activo'); 
 
   document.getElementById('panel-izq').style.display = "flex";
   document.getElementById('panel-der').style.display = "flex";
   document.getElementById('panel-inf-izq').style.display = "flex";
+
+  document.getElementById('split-sel-izq').style.display = "none";
+  const panelDer = document.getElementById('panel-der');
+  const selectoresPanelDer = panelDer.querySelector('.selector-mapa-split');
+  if(selectoresPanelDer) selectoresPanelDer.style.display = "none";
 
   document.getElementById('badge-c1').innerText = "Nivel: 200 hPa";
   document.getElementById('badge-c2').innerText = "Nivel: 500 hPa";
@@ -165,7 +177,8 @@ function cargarModoTresPaneles(elementoBoton) {
 
   categoriaActual = baseDeDatosActual["altura500"]; 
   const slider = document.getElementById('time-slider');
-  slider.max = categoriaActual.archivos.length - 1; slider.value = 0;
+  slider.max = categoriaActual.archivos.length - 1; 
+  slider.value = 0;
 
   construirSegmentosLineaTiempo(); 
   actualizarImagen(0);
@@ -270,14 +283,17 @@ function desactivarModosEspeciales() {
   const workspace = document.getElementById('workspace-id');
   workspace.classList.remove('modo-cuatro-activo');
   workspace.classList.remove('modo-vorticidad-activo');
-  workspace.classList.remove('split-activo');
-  workspace.style.display = '';
-  workspace.style.flexDirection = '';
-  workspace.style.gap = '';
+  workspace.classList.remove('modo-tres-activo');
 
   document.getElementById('panel-izq').style.display = "flex";
-  document.getElementById('panel-der').style.display = modoSplitActivo ? "flex" : "none";
   
+  const panelDer = document.getElementById('panel-der');
+  panelDer.style.display = modoSplitActivo ? "flex" : "none";
+  
+  document.getElementById('split-sel-izq').style.display = modoSplitActivo ? "block" : "none";
+  const selectoresPanelDer = panelDer.querySelector('.selector-mapa-split');
+  if(selectoresPanelDer) selectoresPanelDer.style.display = modoSplitActivo ? "block" : "none";
+
   document.getElementById('panel-inf-izq').style.display = "none";
   document.getElementById('panel-inf-der').style.display = "none";
   document.getElementById('panel-vort-izq').style.display = "none";
@@ -319,8 +335,13 @@ function actualizarImagen(indice) {
     archivoReferencia = baseDeDatosActual[capaSplitIzq].archivos[indiceActual];
     document.getElementById('mapa-img').src = baseDeDatosActual[capaSplitIzq].ruta + archivoReferencia;
     if (modoSplitActivo) {
-      const archivoDer = baseDeDatosActual[capaSplitDer].archivos[indiceActual];
-      document.getElementById('mapa-img-der').src = baseDeDatosActual[capaSplitDer].ruta + archivoDer;
+      // 🚀 ESCUDO COMPLEMENTARIO: Verificamos de forma estricta que la capa elegida exista en el evento
+      if (baseDeDatosActual[capaSplitDer]) {
+        const archivoDer = baseDeDatosActual[capaSplitDer].archivos[indiceActual];
+        document.getElementById('mapa-img-der').src = baseDeDatosActual[capaSplitDer].ruta + archivoDer;
+      } else {
+        document.getElementById('mapa-img-der').src = ""; 
+      }
     }
   }
 
@@ -525,7 +546,7 @@ function iniciarArrastreEspejado(e) {
   if (escala === 1) return;
   estaArrastrando = true; inicioX = e.clientX - posX; inicioY = e.clientY - posY;
 }
-contenidosContenedores.forEach(c => c.addEventListener('mousedown', inicioX));
+contenidosContenedores.forEach(c => c.addEventListener('mousedown', iniciarArrastreEspejado));
 
 window.addEventListener('mousemove', function(e) {
   if (!estaArrastrando) return;
