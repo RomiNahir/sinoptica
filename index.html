@@ -47,7 +47,10 @@
             <button class="color-btn" style="background-color: #FFD700;" onclick="cambiarColorDibujo('#FFD700')" title="Amarillo"></button>
             <button class="color-btn" style="background-color: #000000;" onclick="cambiarColorDibujo('#000000')" title="Negro"></button>
           </div>
-          <button class="btn-dibujo-accion" onclick="borrarDibujo()">🧼 Borrar Trazos</button>
+          
+          <button class="btn-dibujo-accion" id="btn-herramienta-punto" onclick="toggleHerramientaPunto()" style="margin-bottom: 8px; transition: all 0.2s;">📍 Punto Sincronizado</button>
+          
+          <button class="btn-dibujo-accion" onclick="borrarDibujo(); limpiarPuntosReferencia();">🧼 Borrar Trazos</button>
           
           <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
           <button class="carpeta-boton" style="background-color: #37474F; color: white; border-color: #37474F;" onclick="mostrarEcuaciones()">∑ Ecuaciones QG</button>
@@ -151,6 +154,7 @@
             <div class="img-wrapper" id="img-container">
               <span class="badge-cuadrante" id="badge-c1"></span>
               <img id="mapa-img" src="" alt="Campo Sinóptico">
+              <div class="puntos-container" id="puntos-cont-1"></div>
             </div>
           </div>
 
@@ -165,6 +169,7 @@
             <div class="img-wrapper" id="img-container-der">
               <span class="badge-cuadrante" id="badge-c2"></span>
               <img id="mapa-img-der" src="" alt="Campo Sinóptico Secundario">
+              <div class="puntos-container" id="puntos-cont-2"></div>
             </div>
           </div>
 
@@ -172,6 +177,7 @@
             <div class="img-wrapper" id="img-container-inf-izq">
               <span class="badge-cuadrante" id="badge-c3"></span>
               <img id="mapa-img-inf-izq" src="" alt="Campo Inferior Izquierdo">
+              <div class="puntos-container" id="puntos-cont-3"></div>
             </div>
           </div>
 
@@ -179,6 +185,7 @@
             <div class="img-wrapper" id="img-container-inf-der">
               <span class="badge-cuadrante" id="badge-c4"></span>
               <img id="mapa-img-inf-der" src="" alt="Campo Inferior Derecho">
+              <div class="puntos-container" id="puntos-cont-4"></div>
             </div>
           </div>
 
@@ -186,6 +193,7 @@
             <div class="img-wrapper" id="img-container-vort-izq">
               <span class="badge-cuadrante" id="badge-v1"></span>
               <img id="mapa-img-vort-izq" src="" alt="Advección Vorticidad 500hPa">
+              <div class="puntos-container" id="puntos-cont-5"></div>
             </div>
           </div>
 
@@ -193,6 +201,7 @@
             <div class="img-wrapper" id="img-container-vort-der">
               <span class="badge-cuadrante" id="badge-v2"></span>
               <img id="mapa-img-vort-der" src="" alt="Advección Vorticidad 1000hPa">
+              <div class="puntos-container" id="puntos-cont-6"></div>
             </div>
           </div>
 

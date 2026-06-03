@@ -64,6 +64,13 @@ const etiquetasCuatro = ["Nivel: 1000 hPa", "Nivel: 900 hPa", "Nivel: 700 hPa", 
 
 let escala = 1; let posX = 0; let posY = 0;
 let estaArrastrando = false; let inicioX = 0; let inicioY = 0;
+let clickStartX = 0; let clickStartY = 0; // 🚀 Coordenadas de control anti-falsos clics
+
+const contenedoresPuntos = [
+  document.getElementById('puntos-cont-1'), document.getElementById('puntos-cont-2'),
+  document.getElementById('puntos-cont-3'), document.getElementById('puntos-cont-4'),
+  document.getElementById('puntos-cont-5'), document.getElementById('puntos-cont-6')
+];
 
 const mesesEsp = {
   "APR": "Abril", "NOV": "Noviembre"
@@ -82,11 +89,9 @@ function seleccionarEvento(idEvento) {
 
   if(document.getElementById('panel-ecuaciones')) document.getElementById('panel-ecuaciones').style.display = 'none';
 
-  // 🚀 SOLUCIÓN AL SPLIT BLANCO: Forzamos capas iniciales compatibles que existan en ambos casos
   capaSplitIzq = "superficie";
   capaSplitDer = "altura500";
 
-  // Sincronizamos los selectores <select> visuales de la pantalla central
   const selectIzq = document.querySelector("#split-sel-izq select");
   const selectDer = document.querySelector("#panel-der select");
   if(selectIzq) selectIzq.value = "superficie";
@@ -100,8 +105,6 @@ function seleccionarEvento(idEvento) {
     document.getElementById('btn-div').style.display = 'none';
     document.getElementById('btn-advT').style.display = 'none';
     document.getElementById('btn-advV').style.display = 'none';
-    
-    document.getElementById('btn-modo-3').innerText = "📊 3 paneles";
     document.getElementById('btn-modo-3').style.display = 'block';
   } else {
     document.getElementById('btn-250').innerText = "📁 Mapas de 250hPa";
@@ -335,7 +338,6 @@ function actualizarImagen(indice) {
     archivoReferencia = baseDeDatosActual[capaSplitIzq].archivos[indiceActual];
     document.getElementById('mapa-img').src = baseDeDatosActual[capaSplitIzq].ruta + archivoReferencia;
     if (modoSplitActivo) {
-      // 🚀 ESCUDO COMPLEMENTARIO: Verificamos de forma estricta que la capa elegida exista en el evento
       if (baseDeDatosActual[capaSplitDer]) {
         const archivoDer = baseDeDatosActual[capaSplitDer].archivos[indiceActual];
         document.getElementById('mapa-img-der').src = baseDeDatosActual[capaSplitDer].ruta + archivoDer;
@@ -383,6 +385,9 @@ function actualizarImagen(indice) {
   });
 }
 
+// ==========================================================
+// CONTROLES DE NAVEGACIÓN Y ZOOM STANDARD
+// ==========================================================
 function cambiarPaso(direccion) {
   let nuevoIndice = indiceActual + direccion;
   if (nuevoIndice >= 0 && nuevoIndice < categoriaActual.archivos.length) {
@@ -529,6 +534,11 @@ function aplicarTransformacion() {
   imgIzq.style.transform = transfString; imgDer.style.transform = transfString;
   imgInfIzq.style.transform = transfString; imgInfDer.style.transform = transfString;
   imgVortIzq.style.transform = transfString; imgVortDer.style.transform = transfString;
+  
+  // 🚀 NUEVO: Mantenemos los puntos de referencia alineados con el zoom del mapa
+  contenedoresPuntos.forEach(cont => {
+    if(cont) cont.style.transform = transfString;
+  });
 }
 
 function resetearZoom() { escala = 1; posX = 0; posY = 0; aplicarTransformacion(); }
@@ -543,6 +553,7 @@ function coordinarZoom(e) {
 contenidosContenedores.forEach(c => c.addEventListener('wheel', coordinarZoom));
 
 function iniciarArrastreEspejado(e) {
+  clickStartX = e.clientX; clickStartY = e.clientY; // 🚀 Almacena el inicio para filtrar arrastres de clics
   if (escala === 1) return;
   estaArrastrando = true; inicioX = e.clientX - posX; inicioY = e.clientY - posY;
 }
@@ -561,6 +572,65 @@ function toggleSidebar() {
   boton.title = sidebar.classList.contains('oculta') ? "Mostrar barra lateral" : "Ocultar barra lateral";
   if (typeof inicializarCapaDibujo === 'function') setTimeout(inicializarCapaDibujo, 310);
 }
+
+// ==========================================================
+// 🚀 NUEVA INTERACTIVIDAD: LÓGICA DE PUNTOS EN ESPEJO
+// ==========================================================
+let herramientaPuntoActiva = false;
+
+function toggleHerramientaPunto() {
+  herramientaPuntoActiva = !herramientaPuntoActiva;
+  const btn = document.getElementById('btn-herramienta-punto');
+  
+  if (herramientaPuntoActiva) {
+    // Si activa los puntos, desactivamos el lápiz común de trazos por las dudas
+    if (typeof colorActual !== 'undefined') colorActual = ""; 
+    btn.style.backgroundColor = "#E91E63"; btn.style.color = "white";
+    btn.style.boxShadow = "0 0 10px rgba(233, 30, 99, 0.4)";
+    contenidosContenedores.forEach(c => { if(c) c.style.cursor = "crosshair"; });
+  } else {
+    btn.style.backgroundColor = "#e0e0e0"; btn.style.color = "#333";
+    btn.style.boxShadow = "none";
+    contenidosContenedores.forEach(c => { if(c) c.style.cursor = "grab"; });
+  }
+}
+
+function colocarPuntoEspejo(e) {
+  if (!herramientaPuntoActiva) return;
+
+  // Filtro estricto: Si la distancia entre mousedown y click es mayor a 5px, el alumno estaba paneando el mapa
+  const difX = Math.abs(e.clientX - clickStartX);
+  const difY = Math.abs(e.clientY - clickStartY);
+  if (difX > 5 || difY > 5) return; 
+
+  const rect = this.getBoundingClientRect();
+  const visualX = e.clientX - rect.left;
+  const visualY = e.clientY - rect.top;
+  
+  // Destransformación matemática: Calcula la posición exacta real sobre la imagen original
+  const mapaX = (visualX - posX) / escala;
+  const mapaY = (visualY - posY) / escala;
+
+  // Inyectamos el punto en todos los contenedores de mapas visibles
+  contenedoresPuntos.forEach(cont => {
+    if (cont) {
+      const punto = document.createElement('div');
+      punto.className = 'marcador-punto';
+      punto.style.left = `${mapaX}px`;
+      punto.style.top = `${mapaY}px`;
+      cont.appendChild(punto);
+    }
+  });
+}
+
+function limpiarPuntosReferencia() {
+  contenedoresPuntos.forEach(cont => { if (cont) cont.innerHTML = ""; });
+}
+
+// Vinculamos el detector de clics a las cajas de mapas
+contenidosContenedores.forEach(c => {
+  if (c) c.addEventListener('click', colocarPuntoEspejo);
+});
 
 window.addEventListener('DOMContentLoaded', () => {
   volverAlInicioAbsoluto(); 

@@ -315,3 +315,32 @@ kbd {
   }
   /* Nota: Mantenemos el modo triple estrictamente horizontal (row) para garantizar el análisis sinóptico correcto */
 }
+
+/* ==========================================================================
+   📍 HERRAMIENTA DE PUNTOS DE REFERENCIA SINCRONIZADOS
+   ========================================================================== */
+.puntos-container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; /* No bloquea los clics ni el arrastre del mapa */
+  transform-origin: center center;
+  transition: transform 0.1s ease-out;
+}
+
+.marcador-punto {
+  position: absolute;
+  width: 12px; height: 12px;
+  background-color: #E91E63; /* Rosa neón hiper visible sobre cualquier mapa */
+  border: 2px solid white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%); /* Centra el punto exacto del clic */
+  box-shadow: 0 0 8px rgba(0,0,0,0.6);
+  animation: pulsarMarcador 1.5s infinite;
+}
+
+@keyframes pulsarMarcador {
+  0% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(233, 30, 99, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0); }
+}
