@@ -8,7 +8,7 @@ const listaAbril2021 = [
   "13APR00Z2021.png"
 ];
 
-// 🚀 EVENTO 2: Noviembre de 2006 (Extensión .png nativa fija)
+// 🚀 EVENTO 2: Noviembre de 2006
 const listaNoviembre2006 = [
   "2006110500.png", "2006110506.png", "2006110512.png", "2006110518.png",
   "2006110600.png", "2006110606.png", "2006110612.png", "2006110618.png",
@@ -16,7 +16,18 @@ const listaNoviembre2006 = [
   "2006110800.png", "2006110806.png", "2006110812.png", "2006110818.png"
 ];
 
-// 🗄️ DICCIONARIO GLOBAL DE EVENTOS (Rutas relativas anidadas en 2006/)
+// 🚀 EVENTO 3: Mayo de 2026
+const listaMayo2026 = [
+  "2026050600.png", "2026050606.png", "2026050612.png", "2026050618.png",
+  "2026050700.png", "2026050706.png", "2026050712.png", "2026050718.png",
+  "2026050800.png", "2026050806.png", "2026050812.png", "2026050818.png",
+  "2026050900.png", "2026050906.png", "2026050912.png", "2026050918.png",
+  "2026051000.png", "2026051006.png", "2026051012.png", "2026051018.png",
+  "2026051100.png", "2026051106.png", "2026051112.png", "2026051118.png",
+  "2026051200.png", "2026051206.png", "2026051212.png", "2026051218.png"
+];
+
+// 🗄️ DICCIONARIO GLOBAL DE EVENTOS
 const baseDeDatosGlobal = {
   'abril2021': {
     tituloSidebar: "📂 Abril de 2021",
@@ -41,6 +52,21 @@ const baseDeDatosGlobal = {
       altura500:   { ruta: "2006/500/",    archivos: listaNoviembre2006.map(f => `500_Geop_Vort_${f}`) }, 
       superficie:  { ruta: "2006/1000/",   archivos: listaNoviembre2006.map(f => `1000_Geop_V_Esp_${f}`) } 
     }
+  },
+  'mayo2026': {
+    tituloSidebar: "📂 Mayo de 2026",
+    capas: {
+      altura250:   { ruta: "mayo2026/200/",    archivos: listaMayo2026.map(f => `200_Geop_Div_${f}`) }, 
+      altura500:   { ruta: "mayo2026/500v/",   archivos: listaMayo2026.map(f => `500_Geop_Vort_${f}`) }, 
+      superficie:  { ruta: "mayo2026/1000/",   archivos: listaMayo2026.map(f => `1000_Geop_V_Esp_${f}`) },
+      omega:       { ruta: "mayo2026/700w/",   archivos: listaMayo2026.map(f => `700_Omega_${f}`) },
+      divergencia: { ruta: "mayo2026/900D/",   archivos: listaMayo2026.map(f => `900_Div_${f}`) },
+      // 🚀 ASIGNAMOS LAS 4 CARPETAS DE ADVECCIÓN A SUS CLAVES RESPECTIVAS
+      adv400:      { ruta: "mayo2026/400_AT/", archivos: listaMayo2026.map(f => `400_AT_${f}`) },
+      adv700:      { ruta: "mayo2026/700_AT/", archivos: listaMayo2026.map(f => `700_AT_${f}`) },
+      adv900:      { ruta: "mayo2026/850_AT/", archivos: listaMayo2026.map(f => `850_AT_${f}`) },
+      adv1000:     { ruta: "mayo2026/950_AT/", archivos: listaMayo2026.map(f => `950_AT_${f}`) }
+    }
   }
 };
 
@@ -60,11 +86,10 @@ let capaSplitIzq = "superficie";
 let capaSplitDer = "altura500";
 
 const carpetasCuatro = ["adv1000", "adv900", "adv700", "adv400"];
-const etiquetasCuatro = ["Nivel: 1000 hPa", "Nivel: 900 hPa", "Nivel: 700 hPa", "Nivel: 400 hPa"];
 
 let escala = 1; let posX = 0; let posY = 0;
 let estaArrastrando = false; let inicioX = 0; let inicioY = 0;
-let clickStartX = 0; let clickStartY = 0; // 🚀 Coordenadas de control anti-falsos clics
+let clickStartX = 0; let clickStartY = 0; 
 
 const contenedoresPuntos = [
   document.getElementById('puntos-cont-1'), document.getElementById('puntos-cont-2'),
@@ -73,7 +98,7 @@ const contenedoresPuntos = [
 ];
 
 const mesesEsp = {
-  "APR": "Abril", "NOV": "Noviembre"
+  "APR": "Abril", "NOV": "Noviembre", "MAY": "Mayo"
 };
 
 // ==========================================================
@@ -97,19 +122,49 @@ function seleccionarEvento(idEvento) {
   if(selectIzq) selectIzq.value = "superficie";
   if(selectDer) selectDer.value = "altura500";
 
-  if (idEvento === 'eventoNuevo') {
+  if (idEvento === 'mayo2026') {
     document.getElementById('btn-250').innerText = "📁 Mapas de 200hPa";
+    document.getElementById('btn-500').innerText = "📁 Mapas de 500v";
+    document.getElementById('btn-sup').innerText = "📁 Mapas de 1000hPa";
+    document.getElementById('btn-omega').innerText = "📁 Omega 700w";
+    document.getElementById('btn-div').innerText = "📁 Divergencia 900D";
+
+    document.getElementById('btn-250').style.display = 'block';
+    document.getElementById('btn-500').style.display = 'block';
+    document.getElementById('btn-sup').style.display = 'block';
+    document.getElementById('btn-omega').style.display = 'block';
+    document.getElementById('btn-div').style.display = 'block';
+
+    // 🚀 Activamos el botón de 4 paneles para Mayo 2026
+    document.getElementById('btn-advT').style.display = 'block';
+    document.getElementById('btn-advV').style.display = 'none';
+    
+    document.getElementById('btn-modo-3').innerText = "📊 3 paneles";
+    document.getElementById('btn-modo-3').style.display = 'block';
+  } 
+  else if (idEvento === 'eventoNuevo') {
+    document.getElementById('btn-250').innerText = "📁 Mapas de 200hPa";
+    document.getElementById('btn-500').innerText = "📁 Mapas de 500hPa";
     document.getElementById('btn-sup').innerText = "📁 Mapas de 1000hPa";
     
+    document.getElementById('btn-250').style.display = 'block';
+    document.getElementById('btn-500').style.display = 'block';
+    document.getElementById('btn-sup').style.display = 'block';
+
     document.getElementById('btn-omega').style.display = 'none';
     document.getElementById('btn-div').style.display = 'none';
     document.getElementById('btn-advT').style.display = 'none';
     document.getElementById('btn-advV').style.display = 'none';
+    document.getElementById('btn-modo-3').innerText = "📊 3 paneles";
     document.getElementById('btn-modo-3').style.display = 'block';
   } else {
     document.getElementById('btn-250').innerText = "📁 Mapas de 250hPa";
+    document.getElementById('btn-500').innerText = "📁 Mapas de 500hPa";
     document.getElementById('btn-sup').innerText = "📁 Mapas de superficie";
     
+    document.getElementById('btn-250').style.display = 'block';
+    document.getElementById('btn-500').style.display = 'block';
+    document.getElementById('btn-sup').style.display = 'block';
     document.getElementById('btn-omega').style.display = 'block';
     document.getElementById('btn-div').style.display = 'block';
     document.getElementById('btn-advT').style.display = 'block';
@@ -148,7 +203,7 @@ function mostrarEcuaciones() {
 }
 
 // ==========================================================
-// 🌍 VISTAS ESPECIALES (MODO 3 PANELES CONTROLADO)
+// 🌍 VISTAS ESPECIALES
 // ==========================================================
 function cargarModoTresPaneles(elementoBoton) {
   if (!baseDeDatosActual) return;
@@ -231,8 +286,14 @@ function cargarModoCuatroPaneles(elementoBoton) {
   document.getElementById('panel-inf-izq').style.display = "flex";
   document.getElementById('panel-inf-der').style.display = "flex";
 
+  // 🚀 ASIGNACIÓN DINÁMICA DE ETIQUETAS: Si es 2026, muestra las alturas correspondientes
+  let etiquetas = ["Nivel: 1000 hPa", "Nivel: 900 hPa", "Nivel: 700 hPa", "Nivel: 400 hPa"];
+  if (baseDeDatosActual === baseDeDatosGlobal['mayo2026'].capas) {
+    etiquetas = ["Nivel: 950 hPa", "Nivel: 850 hPa", "Nivel: 700 hPa", "Nivel: 400 hPa"];
+  }
+
   for (let i = 0; i < 4; i++) {
-    document.getElementById(`badge-c${i+1}`).innerText = etiquetasCuatro[i];
+    document.getElementById(`badge-c${i+1}`).innerText = etiquetas[i];
   }
 
   if(document.getElementById('home-cover')) document.getElementById('home-cover').style.display = 'none';
@@ -350,7 +411,6 @@ function actualizarImagen(indice) {
   if (typeof colorActual !== 'undefined' && colorActual !== "") colorActual = ""; 
   if (typeof inicializarCapaDibujo === 'function') setTimeout(inicializarCapaDibujo, 50);
 
-  // Decodificación Temporal Inteligente (Multiformato)
   const posMesRef = archivoReferencia.toUpperCase().indexOf("APR");
   let dia = "--", mesTexto = "APR", hora = "--", anio = "2021";
   
@@ -360,13 +420,15 @@ function actualizarImagen(indice) {
     anio = archivoReferencia.substring(posMesRef + 7, posMesRef + 11);
     mesTexto = "APR";
   } else {
-    const match2006 = archivoReferencia.match(/2006\d{6}/);
-    if (match2006) {
-      const ts = match2006[0];
+    const matchFecha = archivoReferencia.match(/20\d{8}/);
+    if (matchFecha) {
+      const ts = matchFecha[0];
       anio = ts.substring(0, 4);
-      mesTexto = "NOV"; 
+      const mesNum = ts.substring(4, 6);
       dia = ts.substring(6, 8);
       hora = ts.substring(8, 10);
+      if (mesNum === "11") mesTexto = "NOV";
+      if (mesNum === "05") mesTexto = "MAY";
     }
   }
   
@@ -385,9 +447,6 @@ function actualizarImagen(indice) {
   });
 }
 
-// ==========================================================
-// CONTROLES DE NAVEGACIÓN Y ZOOM STANDARD
-// ==========================================================
 function cambiarPaso(direccion) {
   let nuevoIndice = indiceActual + direccion;
   if (nuevoIndice >= 0 && nuevoIndice < categoriaActual.archivos.length) {
@@ -442,6 +501,13 @@ function construirSegmentosLineaTiempo() {
   if (!contenedorTicks || !categoriaActual) return;
   contenedorTicks.innerHTML = ""; 
 
+  const esCasoLargo = categoriaActual.archivos.length > 20;
+  if (esCasoLargo) {
+    contenedorTicks.classList.add('modo-denso');
+  } else {
+    contenedorTicks.classList.remove('modo-denso');
+  }
+
   categoriaActual.archivos.forEach((nombreArchivo, idx) => {
     const posMes = nombreArchivo.toUpperCase().indexOf("APR");
     let dia = "--"; let hora = "--";
@@ -450,9 +516,9 @@ function construirSegmentosLineaTiempo() {
       dia = nombreArchivo.substring(posMes - 2, posMes);
       hora = nombreArchivo.substring(posMes + 3, posMes + 5);
     } else {
-      const match2006 = nombreArchivo.match(/2006\d{6}/);
-      if (match2006) {
-        const ts = match2006[0];
+      const matchFecha = nombreArchivo.match(/20\d{8}/);
+      if (matchFecha) {
+        const ts = matchFecha[0];
         dia = ts.substring(6, 8);
         hora = ts.substring(8, 10);
       }
@@ -460,7 +526,8 @@ function construirSegmentosLineaTiempo() {
     
     const elementoTick = document.createElement('span');
     elementoTick.className = 'time-tick';
-    elementoTick.innerText = `${dia}-${hora}Z`;
+    
+    elementoTick.innerText = esCasoLargo ? `${dia}-${hora}` : `${dia}-${hora}Z`;
     elementoTick.title = `Saltar al día ${dia} a las ${hora}:00 UTC`;
     
     elementoTick.addEventListener('click', () => {
@@ -535,7 +602,6 @@ function aplicarTransformacion() {
   imgInfIzq.style.transform = transfString; imgInfDer.style.transform = transfString;
   imgVortIzq.style.transform = transfString; imgVortDer.style.transform = transfString;
   
-  // 🚀 NUEVO: Mantenemos los puntos de referencia alineados con el zoom del mapa
   contenedoresPuntos.forEach(cont => {
     if(cont) cont.style.transform = transfString;
   });
@@ -553,7 +619,7 @@ function coordinarZoom(e) {
 contenidosContenedores.forEach(c => c.addEventListener('wheel', coordinarZoom));
 
 function iniciarArrastreEspejado(e) {
-  clickStartX = e.clientX; clickStartY = e.clientY; // 🚀 Almacena el inicio para filtrar arrastres de clics
+  clickStartX = e.clientX; clickStartY = e.clientY; 
   if (escala === 1) return;
   estaArrastrando = true; inicioX = e.clientX - posX; inicioY = e.clientY - posY;
 }
@@ -574,7 +640,7 @@ function toggleSidebar() {
 }
 
 // ==========================================================
-// 🚀 NUEVA INTERACTIVIDAD: LÓGICA DE PUNTOS EN ESPEJO
+// INTERACTIVIDAD: LÓGICA DE PUNTOS EN ESPEJO
 // ==========================================================
 let herramientaPuntoActiva = false;
 
@@ -583,7 +649,6 @@ function toggleHerramientaPunto() {
   const btn = document.getElementById('btn-herramienta-punto');
   
   if (herramientaPuntoActiva) {
-    // Si activa los puntos, desactivamos el lápiz común de trazos por las dudas
     if (typeof colorActual !== 'undefined') colorActual = ""; 
     btn.style.backgroundColor = "#E91E63"; btn.style.color = "white";
     btn.style.boxShadow = "0 0 10px rgba(233, 30, 99, 0.4)";
@@ -598,7 +663,6 @@ function toggleHerramientaPunto() {
 function colocarPuntoEspejo(e) {
   if (!herramientaPuntoActiva) return;
 
-  // Filtro estricto: Si la distancia entre mousedown y click es mayor a 5px, el alumno estaba paneando el mapa
   const difX = Math.abs(e.clientX - clickStartX);
   const difY = Math.abs(e.clientY - clickStartY);
   if (difX > 5 || difY > 5) return; 
@@ -607,11 +671,9 @@ function colocarPuntoEspejo(e) {
   const visualX = e.clientX - rect.left;
   const visualY = e.clientY - rect.top;
   
-  // Destransformación matemática: Calcula la posición exacta real sobre la imagen original
   const mapaX = (visualX - posX) / escala;
   const mapaY = (visualY - posY) / escala;
 
-  // Inyectamos el punto en todos los contenedores de mapas visibles
   contenedoresPuntos.forEach(cont => {
     if (cont) {
       const punto = document.createElement('div');
@@ -627,7 +689,6 @@ function limpiarPuntosReferencia() {
   contenedoresPuntos.forEach(cont => { if (cont) cont.innerHTML = ""; });
 }
 
-// Vinculamos el detector de clics a las cajas de mapas
 contenidosContenedores.forEach(c => {
   if (c) c.addEventListener('click', colocarPuntoEspejo);
 });

@@ -89,7 +89,6 @@ body {
   display: flex; gap: 8px; margin-bottom: 15px; justify-content: space-between;
 }
 
-/* 🚀 CORREGIDO: Candados estrictos para evitar deformaciones ovaladas en Edge/Windows */
 .color-btn {
   width: 32px !important;
   height: 32px !important;
@@ -165,7 +164,6 @@ body {
 }
 .selector-mapa-split select:focus { border-color: var(--primary-color); }
 
-/* 🚀 CORREGIDO: Forzamos orientación horizontal rígida para los 3 paneles en paralelo */
 .workspace-mapas.modo-tres-activo {
   display: flex !important;
   flex-direction: row !important; 
@@ -176,7 +174,6 @@ body {
 }
 .workspace-mapas.modo-tres-activo .badge-cuadrante { display: block; }
 
-/* GRID FLEXIBLE ADAPTATIVO ASGURADO PARA EL MODO 4 PANELES (2x2) */
 .workspace-mapas.modo-cuatro-activo {
   display: grid !important; 
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
@@ -189,7 +186,6 @@ body {
   min-width: 0; min-height: 0; 
 }
 
-/* MODO ADAPTATIVO: ADVECCIÓN DE VORTICIDAD (1x2) */
 .workspace-mapas.modo-vorticidad-activo {
   display: flex !important; width: 100%; height: 100%; gap: 12px;
 }
@@ -222,7 +218,6 @@ body {
   transition: transform 0.1s ease-out; user-select: none; -webkit-user-drag: none;
 }
 
-/* Lienzo de dibujo superpuesto */
 #capa-dibujo {
   pointer-events: auto;
   z-index: 5;
@@ -242,6 +237,27 @@ body {
 .time-tick { font-size: 10px; color: #777; font-weight: 600; cursor: pointer; position: relative; transition: color 0.2s, transform 0.1s; user-select: none; }
 .time-tick:hover { color: var(--primary-color); transform: scale(1.1); }
 .time-tick.tick-activo { color: #0078D7; font-weight: bold; font-size: 11px; }
+
+/* 🚀 SOLUCIÓN AL SLIDER: ROTACIÓN EN DIAGONAL PARA CASOS MUY LARGOS (COMO MAYO 2026) */
+.timeline-ticks.modo-denso {
+  padding-bottom: 25px; /* Crea espacio abajo para que no se corte el texto rotado */
+}
+.timeline-ticks.modo-denso .time-tick {
+  font-size: 10px;
+  transform: rotate(-55deg); /* Gira los textos en diagonal */
+  transform-origin: top left; /* Punto de pivote para el giro */
+  margin-top: 10px;
+  display: inline-block;
+  white-space: nowrap; /* Impide que el texto se rompa en dos renglones */
+}
+.timeline-ticks.modo-denso .time-tick.tick-activo {
+  font-size: 11px;
+  font-weight: 900;
+  color: #0078D7;
+}
+.timeline-ticks.modo-denso .time-tick:hover {
+  transform: rotate(-55deg) scale(1.2);
+}
 
 .shortcuts-legend {
   text-align: center; font-size: 11px; color: #666; background-color: #f9f9f9;
@@ -302,9 +318,6 @@ kbd {
   .img-wrapper img, #capa-dibujo { max-width: 100% !important; max-height: 100% !important; position: absolute !important; top: 0 !important; left: 0 !important; }
 }
 
-/* ==========================================================================
-   📱 ADAPTABILIDAD DE PANTALLA EN RESOLUCIONES ACUMULADAS
-   ========================================================================== */
 @media (max-width: 1000px) or (max-height: 720px) {
   .viewer-container {
     height: auto;
@@ -313,7 +326,6 @@ kbd {
   .img-wrapper {
     min-height: 40vh; 
   }
-  /* Nota: Mantenemos el modo triple estrictamente horizontal (row) para garantizar el análisis sinóptico correcto */
 }
 
 /* ==========================================================================
@@ -323,7 +335,7 @@ kbd {
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  pointer-events: none; /* No bloquea los clics ni el arrastre del mapa */
+  pointer-events: none; 
   transform-origin: center center;
   transition: transform 0.1s ease-out;
 }
@@ -331,10 +343,10 @@ kbd {
 .marcador-punto {
   position: absolute;
   width: 12px; height: 12px;
-  background-color: #E91E63; /* Rosa neón hiper visible sobre cualquier mapa */
+  background-color: #E91E63; 
   border: 2px solid white;
   border-radius: 50%;
-  transform: translate(-50%, -50%); /* Centra el punto exacto del clic */
+  transform: translate(-50%, -50%); 
   box-shadow: 0 0 8px rgba(0,0,0,0.6);
   animation: pulsarMarcador 1.5s infinite;
 }
